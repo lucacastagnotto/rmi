@@ -1,0 +1,3 @@
+rootProject.name = 'rmi'
+
+include ':app'
