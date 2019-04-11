@@ -4,11 +4,19 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "./node_modules/react-native-maps/enable-google-maps ios"
   },
   "dependencies": {
+    "geolib": "^2.0.24",
+    "immutability-helper": "^3.0.0",
     "react": "16.6.3",
-    "react-native": "0.58.5"
+    "react-native": "^0.58.6",
+    "react-native-maps": "^0.23.0",
+    "react-native-maps-directions": "^1.6.0",
+    "react-native-tts": "^2.0.0",
+    "react-native-voice": "^0.2.6",
+    "react-native-youtube": "^1.1.0"
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",
