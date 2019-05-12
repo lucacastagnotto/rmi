@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+<<<<<<< HEAD
 import {Platform, StyleSheet, Text, TouchableOpacity, ScrollView, View, AsyncStorage, PixelRatio} from 'react-native';
 
 import UserMap from './components/UserMap';
@@ -15,6 +16,20 @@ var DBPEDIA_KEY = "a87affce-e8fb-4b31-b64c-43d19e64cfcd";
 var nextkey = 0; //valore necessario da attribuire come 'key' a ciascun <Marker> di <MapView>. Da aggiornare (++) dopo ogni assegnazione
 var plus_code_digits = ["2", "3", "4", "5", "6", "7", "8", "9", "C", "F", "G", "H", "J", "M", "P", "Q", "R", "V", "W", "X"];
 
+=======
+import {Platform, StyleSheet, Text, TouchableOpacity, View, AsyncStorage, PixelRatio} from 'react-native';
+
+import UserMap from './components/UserMap';
+import Tts from 'react-native-tts';
+import Speech from './components/Speech';
+import TestButton from './components/TestButton';
+import update from 'immutability-helper';
+import YouTube, { YouTubeStandaloneIOS, YouTubeStandaloneAndroid } from 'react-native-youtube';
+
+var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+var nextkey = 0; //valore necessario da attribuire come 'key' a ciascun <Marker> di <MapView>. Da aggiornare (++) dopo ogni assegnazione
+//DBPedia Key = a87affce-e8fb-4b31-b64c-43d19e64cfcd;
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
 
 type Props = {};
 
@@ -22,6 +37,7 @@ export default class App extends Component<Props> {
 
   state = {
     myLocation: null,
+<<<<<<< HEAD
     markers: [],
     text_to_read: "This is Hoormi",
     ttsStatus: "initializing",
@@ -42,17 +58,43 @@ export default class App extends Component<Props> {
     quality: null,
     error: null,
     isPlaying: false, //controllo di riproduzione video
+=======
+    watchID: null,
+    markers: [], //[{latitude: 44.492974, longitude: 11.343129, id: 1, title:"San_Petronio_Basilica"}, {latitude: 44.494206, longitude: 11.346731, id: 2, title: "Torre degli Asinelli"}, {latitude: 44.494301, longitude: 11.342656, id: 3, title: "Fontana del Nettuno"}],
+    text_to_read: "This is Hoormi",
+    ttsStatus: "initializing",
+    selectedVoice: null,
+    //speechRate: 0.6,
+    //speechPitch: 1.5
+    user_language: null,
+    in_ascolto: false,
+    ready_to_listen: false,
+    current_poi: 0, //intero che è indice dell'array markers (Es: if(current_poi==5) allora sto considerando markers[5] )
+    isReady: false,
+    status: null,
+    quality: null,
+    error: null,
+    isPlaying: false,
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     duration: 0,
     currentTime: 0,
     fullscreen: false,
     containerWidth: null,
+<<<<<<< HEAD
     yt_status: false, //toggleClass di YouTube
     buttonstatus: "START" //toggleClass di Go/Stop
+=======
+    status: false
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
   }
 
   options = {
     enableHighAccuracy: true,
+<<<<<<< HEAD
     timeout: 5000,
+=======
+    timeout: 2000,
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     maximumAge: 0
   }
 
@@ -65,15 +107,21 @@ export default class App extends Component<Props> {
       this.setState({ ttsStatus: "started" })
     );
     Tts.addEventListener("tts-finish", event => {
+<<<<<<< HEAD
       this.setState({ 
         ttsStatus: "finished", 
         in_ascolto: false,
         buttonstatus: "GO" 
       });
+=======
+      this.setState({ ttsStatus: "finished" });
+      //this.setState({ in_ascolto: false })
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     });
     Tts.addEventListener("tts-cancel", event =>
       this.setState({ ttsStatus: "cancelled" })
     );
+<<<<<<< HEAD
     
     //Tts.setDefaultPitch(this.state.speechPitch);
     //Tts.setDefaultRate(this.state.speechRate);
@@ -113,6 +161,13 @@ export default class App extends Component<Props> {
 
   componentWillUnmount() {
     navigator.geolocation.clearWatch(watchid);
+=======
+    //Tts.setDefaultRate(this.state.speechRate);
+    //Tts.setDefaultPitch(this.state.speechPitch);
+    Tts.getInitStatus().then(this.initTts);
+    //initSearchHooRMIStrings.then initMarkersWithAnnotations
+    //this.fakeInitSearch();
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
   }
 
   printstate = () => {
@@ -150,11 +205,19 @@ export default class App extends Component<Props> {
   }
 
   shownhide = () => {
+<<<<<<< HEAD
     if(this.state.yt_status) {
       this.setState({ yt_status: false })
     }
     else {
       this.setState({ yt_status: true })
+=======
+    if(this.state.status) {
+      this.setState({ status: false })
+    }
+    else {
+      this.setState({ status: true })
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     }
   }
 
@@ -188,6 +251,7 @@ export default class App extends Component<Props> {
     });
   }
 
+<<<<<<< HEAD
   get_next = (char) => {
   var nextItem;
   index = plus_code_digits.indexOf(char);
@@ -387,6 +451,8 @@ export default class App extends Component<Props> {
     
   }
 
+=======
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
   initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation) => {
 
     var trovato = false;
@@ -456,6 +522,7 @@ export default class App extends Component<Props> {
     }
     console.log("check at the end");
     /*var newmark = update(this.state.markers, {
+<<<<<<< HEAD
       [this.state.current_poi]: {$merge: {title: title}}  
     });*/
   }
@@ -508,11 +575,28 @@ export default class App extends Component<Props> {
         stopped: false,
         buttonstatus: "STOP"
       });
+=======
+              [this.state.current_poi]: {$merge: {title: title}}  
+            });*/
+  }
+
+  pausenresume = async () => {
+    if(this.state.in_ascolto) {
+      Tts.pause();
+      this.setState({ in_ascolto: false });
+      console.log(this.state.in_ascolto);
+    }
+    else {
+      Tts.resume();
+      this.setState({ in_ascolto: true });
+      console.log(this.state.in_ascolto);
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     }
   }
 
   readText = async () => {
     Tts.stop();
+<<<<<<< HEAD
     Tts.speak(this.state.text_to_read);
     this.setState({
       in_ascolto: true
@@ -568,6 +652,14 @@ export default class App extends Component<Props> {
         console.log("Non ci sono altri soundbite in lista");
       }
     }
+=======
+    /*if(this.state.in_ascolto){
+      this.setState({ in_ascolto: false });
+      return;
+    }*/
+    Tts.speak(this.state.text_to_read);
+    this.setState({ in_ascolto: true });
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
   }
 
   setCurrentPosition = (position) => { 
@@ -583,7 +675,11 @@ export default class App extends Component<Props> {
   }
 
   watchCurrentPosition = () => { 
+<<<<<<< HEAD
     let watchid=navigator.geolocation.watchPosition(position => {  
+=======
+    this.state.watchID=navigator.geolocation.watchPosition(position => {  
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
       this.setState(prevState => ({
         myLocation: {
           ...prevState.myLocation,
@@ -593,6 +689,7 @@ export default class App extends Component<Props> {
           longitudeDelta: 0.005
         }
       })); 
+<<<<<<< HEAD
       console.log(position.coords.latitude);
       alert("meow");
       //doesn't work in emulator 
@@ -607,6 +704,21 @@ export default class App extends Component<Props> {
         }
       }*/
       navigator.geolocation.clearWatch(watchid);
+=======
+      //gestisci casi di multipli poi in spazio ristretto
+      /*if(this.getDistance()<200){
+        console.log("distance is ok");
+        if(!this.state.in_ascolto){
+            console.log("in_ascolto is false");
+          if(this.state.ready_to_listen){
+            console.log("ready_to_listen is true");
+            this.setState({ in_ascolto: true });
+            this.readText();
+          }
+        }
+      }*/
+      navigator.geolocation.clearWatch(this.state.watchID);
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     }, error => console.log(err), this.options
     );
   }
@@ -615,9 +727,14 @@ export default class App extends Component<Props> {
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => { 
         this.setCurrentPosition(position); //Inizializza myLocation
+<<<<<<< HEAD
         //this.watchCurrentPosition(); //Aggiorna costantemente myLocation
       }, err => console.log(err), this.options
     );
+=======
+        this.watchCurrentPosition(); //Aggiorna costantemente myLocation
+      }, err => console.log(err));
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     } else {
       console.log("Your browser does not support the Geolocation API!");
     }
@@ -626,7 +743,10 @@ export default class App extends Component<Props> {
   initUserPreferences = async () => {
     let user = await this.getUserKey();
     user = JSON.parse(user);
+<<<<<<< HEAD
     //console.log(user);
+=======
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     this.setState({
       user_language: user.lang
     })
@@ -660,6 +780,7 @@ export default class App extends Component<Props> {
     });
 }
 
+<<<<<<< HEAD
 osm_call = async (lat, lng) => {
   var url = "https://nominatim.openstreetmap.org/reverse?format=json&accept-language=en&lat="+ lat +"&lon="+ lng;
   console.log(url);
@@ -699,6 +820,30 @@ osm_call = async (lat, lng) => {
   dbpedia = async (title) => {
     var coded_title = title.replace(/ /g, "_")
     var url="http://vmdbpedia.informatik.uni-leipzig.de:8080/api/1.0.0/values?property=dbo%3Aabstract&format=JSON&pretty=NONE&limit=100&offset=0&oldVersion=false&key="+ DBPEDIA_KEY +"&oldVersion=false&entities="+ coded_title;//+ encodeURI(this.state.mynextloc.title);
+=======
+  osm_call = async (lat, lng) => {
+    var url = "https://nominatim.openstreetmap.org/reverse?format=json&accept-language=en&lat="+ lat +"&lon="+ lng;
+      console.log(url);
+      return fetch(url, {
+        method: "GET",
+      })
+        .then(res => res.json())
+        .then(
+          (data) => { 
+            console.log(data); 
+            var title = data.address[Object.keys(data.address)[0]];
+            return(title);
+          } 
+        )
+        .catch((error) => {
+          console.log(error);
+        });
+  } 
+
+  dbpedia = async (title) => {
+    var coded_title = title.replace(/ /g, "_")
+    var url="http://vmdbpedia.informatik.uni-leipzig.de:8080/api/1.0.0/values?property=dbo%3Aabstract&format=JSON&pretty=NONE&limit=100&offset=0&oldVersion=false&key=a87affce-e8fb-4b31-b64c-43d19e64cfcd&oldVersion=false&entities="+ coded_title;//+ encodeURI(this.state.mynextloc.title);
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     const proxyurl = "https://yacdn.org/proxy/";
     console.log(url);
       return fetch((proxyurl + url), {
@@ -748,12 +893,24 @@ osm_call = async (lat, lng) => {
         (result) => {
           console.log(result); 
           return(result); 
+<<<<<<< HEAD
+=======
+          /*this.setState(prevState => ({
+            myLocation: {
+              ...prevState.myLocation,
+              plusCode: result.plus_code.global_code,
+              city: result.plus_code.locality.local_address, //Bologna, Italia
+              city_code: result.plus_code.global_code.substring(0,4)
+            }
+          }));*/
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
         }
       )
       .catch((error) => {
         console.log(error);
     }); 
   }
+<<<<<<< HEAD
 
   toggleClass = () => {
     console.log("PREMUTO"+ this.state.buttonstatus);
@@ -807,6 +964,11 @@ osm_call = async (lat, lng) => {
           <Text>SHOWNHIDE</Text>
         </TouchableOpacity>
       */
+=======
+  
+  render() {
+    //this.printstate();
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
     return (
       <View style={styles.container}
         onLayout={({ nativeEvent: { layout: { width } } }) => {
@@ -815,6 +977,7 @@ osm_call = async (lat, lng) => {
       >
         <UserMap myLocation={this.state.myLocation} poi={this.state.markers} />
 
+<<<<<<< HEAD
         <View>
 
           <View style={styles.centralButton}>
@@ -855,6 +1018,24 @@ osm_call = async (lat, lng) => {
             <YouTube
               apiKey="AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"
               videoId={this.state.yt_id}
+=======
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity onPress={this.fakeInitSearch} style={styles.button}>
+            <Text style={styles.buttonText}>CERCO POI</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={this.shownhide}>
+          <Text>SHOWNHIDE</Text>
+        </TouchableOpacity>
+
+        <View>
+          {
+            this.state.status ?
+            <YouTube
+              apiKey="AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"
+              videoId="nlLhw1mtCFA"
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
               play={this.state.isPlaying}
               fullscreen={this.state.fullscreen}
               controls={1}
@@ -864,6 +1045,7 @@ osm_call = async (lat, lng) => {
               ]}
               onError={e => this.setState({ error: e.error })}
               onReady={e => this.setState({ isReady: true })}
+<<<<<<< HEAD
               onChangeState={e => {
                 this.setState({ yt_status: e.state });
                 if(e.state == "ended"){
@@ -881,14 +1063,24 @@ osm_call = async (lat, lng) => {
                 }
               }
               }
+=======
+              onChangeState={e => this.setState({ status: e.state })}
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
               onChangeQuality={e => this.setState({ quality: e.quality })}
               onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
               onProgress={e => this.setState({ duration: e.duration, currentTime: e.currentTime })}
             />
+<<<<<<< HEAD
             : 
             <Text>{this.state.text_to_read}</Text> 
           }
         </View>
+=======
+            : null
+          }
+          </View>
+
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
       </View>
     );
   }
@@ -896,6 +1088,7 @@ osm_call = async (lat, lng) => {
 
 const styles = StyleSheet.create({
   container: {
+<<<<<<< HEAD
     flex: 1,
     backgroundColor: 'white'
     //justifyContent: 'center',
@@ -932,6 +1125,27 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white'
     //alignSelf: 'center'
+=======
+    backgroundColor: 'white',
+    justifyContent: 'center',
+  },
+  player: {
+    alignSelf: 'stretch',
+    marginVertical: 10,
+  },
+  buttonGroup: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#2196F3'
+  },
+  button: {
+    //alignSelf: 'center'
+  },
+  buttonText: {
+    padding: 20,
+    color: 'white',
+    alignSelf: 'center'
+>>>>>>> 6ebd3bf06c2e0b8bce93139eb490bd0c384941be
   }
 });
 

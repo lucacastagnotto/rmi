@@ -22,6 +22,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		202B61147B5146189D1FCB63 /* libRCTYouTube.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36A9F0E6AEA248A19AF34F25 /* libRCTYouTube.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -35,14 +36,33 @@
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* rmiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* rmiTests.m */; };
 		2DF0FFEE2056DD460020B375 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
+		32080E9F309F4C08800F0846 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD5F9775ACB948ED9FD78F81 /* libAirMaps.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		9EAAC58D61214831A5C9DBDD /* libTextToSpeech.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F6BA1DDED498296B88FA5 /* libTextToSpeech.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
+		E7B0C915225F4EC800960076 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C914225F4EC700960076 /* GoogleMapsBase.framework */; };
+		E7B0C917225F4F0B00960076 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C916225F4F0B00960076 /* GoogleMaps.framework */; };
+		E7B0C919225F4F3600960076 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C918225F4F3600960076 /* GoogleMapsCore.framework */; };
+		E7B0C91B225F509200960076 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E7B0C91A225F509200960076 /* GoogleMaps.bundle */; };
+		E7B0C91D225F525C00960076 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C91C225F525C00960076 /* Accelerate.framework */; };
+		E7B0C91F225F526800960076 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C91E225F526800960076 /* CoreData.framework */; };
+		E7B0C921225F526F00960076 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C920225F526F00960076 /* CoreGraphics.framework */; };
+		E7B0C923225F527B00960076 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C922225F527B00960076 /* CoreImage.framework */; };
+		E7B0C925225F528300960076 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C924225F528300960076 /* CoreLocation.framework */; };
+		E7B0C927225F528E00960076 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C926225F528D00960076 /* CoreTelephony.framework */; };
+		E7B0C929225F529500960076 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C928225F529500960076 /* CoreText.framework */; };
+		E7B0C92B225F529F00960076 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C92A225F529F00960076 /* GLKit.framework */; };
+		E7B0C92D225F52A800960076 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C92C225F52A800960076 /* ImageIO.framework */; };
+		E7B0C92F225F52B500960076 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C92E225F52B500960076 /* libc++.tbd */; };
+		E7B0C931225F52BC00960076 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C930225F52BC00960076 /* libz.tbd */; };
+		E7B0C933225F52C400960076 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C932225F52C400960076 /* OpenGLES.framework */; };
+		E7B0C935225F52CE00960076 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C934225F52CE00960076 /* QuartzCore.framework */; };
+		E7B0C937225F52D600960076 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C936225F52D600960076 /* SystemConfiguration.framework */; };
+		E7B0C939225F52E000960076 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B0C938225F52E000960076 /* UIKit.framework */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
-		32080E9F309F4C08800F0846 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD5F9775ACB948ED9FD78F81 /* libAirMaps.a */; };
-		9EAAC58D61214831A5C9DBDD /* libTextToSpeech.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F6BA1DDED498296B88FA5 /* libTextToSpeech.a */; };
 		FB76C54637BC4181A99F5CC6 /* libVoice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8F4A1299B64A3BBE22D985 /* libVoice.a */; };
-		202B61147B5146189D1FCB63 /* libRCTYouTube.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36A9F0E6AEA248A19AF34F25 /* libRCTYouTube.a */; };
+		A372F219D5984BDC8EB4AADB /* YTPlayerView-iframe-player.html in Resources */ = {isa = PBXBuildFile; fileRef = F1B2CA98F5EC4DB984078B00 /* YTPlayerView-iframe-player.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,20 +199,6 @@
 			remoteGlobalIDString = 3D383D621EBD27B9005632C8;
 			remoteInfo = "double-conversion-tvOS";
 		};
-		2DF0FFEA2056DD460020B375 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9936F3131F5F2E4B0010BF04;
-			remoteInfo = privatedata;
-		};
-		2DF0FFEC2056DD460020B375 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9936F32F1F5F2E5B0010BF04;
-			remoteInfo = "privatedata-tvOS";
-		};
 		3DAD3E831DF850E9000B6D8A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
@@ -270,20 +276,6 @@
 			remoteGlobalIDString = 3D3CD9321DE5FBEE00167DC4;
 			remoteInfo = "cxxreact-tvOS";
 		};
-		3DAD3EAC1DF850E9000B6D8A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3D3CD90B1DE5FBD600167DC4;
-			remoteInfo = jschelpers;
-		};
-		3DAD3EAE1DF850E9000B6D8A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
-			remoteInfo = "jschelpers-tvOS";
-		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -319,6 +311,62 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		E7B0C8EB225F4B1100960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EDEBC6D6214B3E7000DD5AC8;
+			remoteInfo = jsi;
+		};
+		E7B0C8ED225F4B1100960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EDEBC73B214B45A300DD5AC8;
+			remoteInfo = jsiexecutor;
+		};
+		E7B0C8EF225F4B1100960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ED296FB6214C9A0900B7C4FE;
+			remoteInfo = "jsi-tvOS";
+		};
+		E7B0C8F1225F4B1100960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ED296FEE214C9CF800B7C4FE;
+			remoteInfo = "jsiexecutor-tvOS";
+		};
+		E7B0C8FC225F4B1300960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0FA341BA5E784B14A85A2209 /* AirMaps.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 11FA5C511C4A1296003AC2EE;
+			remoteInfo = AirMaps;
+		};
+		E7B0C8FF225F4B1300960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0C910C2A36450A923BF31D /* RCTYouTube.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8BDB9BC91B4289AE00EF9FEF;
+			remoteInfo = RCTYouTube;
+		};
+		E7B0C902225F4B1300960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 765AAD4752CB4DA78473D834 /* TextToSpeech.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3A6FB2081D99E12200593599;
+			remoteInfo = TextToSpeech;
+		};
+		E7B0C905225F4B1300960076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 953900CEF36E4B69ACFA4228 /* Voice.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC0729B51EF78E41004EBC83;
+			remoteInfo = Voice;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -331,6 +379,7 @@
 		00E356EE1AD99517003FC87E /* rmiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = rmiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* rmiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = rmiTests.m; sourceTree = "<group>"; };
+		0FA341BA5E784B14A85A2209 /* AirMaps.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/lib/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* rmi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rmi.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -344,20 +393,39 @@
 		2D02E47B1E0B4A5D006451C7 /* rmi-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rmi-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* rmi-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "rmi-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		36A9F0E6AEA248A19AF34F25 /* libRCTYouTube.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTYouTube.a; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
+		765AAD4752CB4DA78473D834 /* TextToSpeech.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TextToSpeech.xcodeproj; path = "../node_modules/react-native-tts/ios/TextToSpeech.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		953900CEF36E4B69ACFA4228 /* Voice.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = Voice.xcodeproj; path = "../node_modules/react-native-voice/ios/Voice.xcodeproj"; sourceTree = "<group>"; };
+		AA0C910C2A36450A923BF31D /* RCTYouTube.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTYouTube.xcodeproj; path = "../node_modules/react-native-youtube/RCTYouTube.xcodeproj"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
+		DA8F4A1299B64A3BBE22D985 /* libVoice.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libVoice.a; sourceTree = "<group>"; };
+		E7B0C914225F4EC700960076 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
+		E7B0C916225F4F0B00960076 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
+		E7B0C918225F4F3600960076 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
+		E7B0C91A225F509200960076 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
+		E7B0C91C225F525C00960076 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		E7B0C91E225F526800960076 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		E7B0C920225F526F00960076 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		E7B0C922225F527B00960076 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		E7B0C924225F528300960076 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		E7B0C926225F528D00960076 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		E7B0C928225F529500960076 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		E7B0C92A225F529F00960076 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		E7B0C92C225F52A800960076 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		E7B0C92E225F52B500960076 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		E7B0C930225F52BC00960076 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		E7B0C932225F52C400960076 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		E7B0C934225F52CE00960076 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		E7B0C936225F52D600960076 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		E7B0C938225F52E000960076 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		0FA341BA5E784B14A85A2209 /* AirMaps.xcodeproj */ = {isa = PBXFileReference; name = "AirMaps.xcodeproj"; path = "../node_modules/react-native-maps/lib/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		FD5F9775ACB948ED9FD78F81 /* libAirMaps.a */ = {isa = PBXFileReference; name = "libAirMaps.a"; path = "libAirMaps.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		765AAD4752CB4DA78473D834 /* TextToSpeech.xcodeproj */ = {isa = PBXFileReference; name = "TextToSpeech.xcodeproj"; path = "../node_modules/react-native-tts/ios/TextToSpeech.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		F70F6BA1DDED498296B88FA5 /* libTextToSpeech.a */ = {isa = PBXFileReference; name = "libTextToSpeech.a"; path = "libTextToSpeech.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		953900CEF36E4B69ACFA4228 /* Voice.xcodeproj */ = {isa = PBXFileReference; name = "Voice.xcodeproj"; path = "../node_modules/react-native-voice/ios/Voice.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		DA8F4A1299B64A3BBE22D985 /* libVoice.a */ = {isa = PBXFileReference; name = "libVoice.a"; path = "libVoice.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		AA0C910C2A36450A923BF31D /* RCTYouTube.xcodeproj */ = {isa = PBXFileReference; name = "RCTYouTube.xcodeproj"; path = "../node_modules/react-native-youtube/RCTYouTube.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		36A9F0E6AEA248A19AF34F25 /* libRCTYouTube.a */ = {isa = PBXFileReference; name = "libRCTYouTube.a"; path = "libRCTYouTube.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		F70F6BA1DDED498296B88FA5 /* libTextToSpeech.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTextToSpeech.a; sourceTree = "<group>"; };
+		FD5F9775ACB948ED9FD78F81 /* libAirMaps.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAirMaps.a; sourceTree = "<group>"; };
+		F1B2CA98F5EC4DB984078B00 /* YTPlayerView-iframe-player.html */ = {isa = PBXFileReference; name = "YTPlayerView-iframe-player.html"; path = "../node_modules/react-native-youtube/assets/YTPlayerView-iframe-player.html"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -373,11 +441,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7B0C939225F52E000960076 /* UIKit.framework in Frameworks */,
+				E7B0C937225F52D600960076 /* SystemConfiguration.framework in Frameworks */,
+				E7B0C935225F52CE00960076 /* QuartzCore.framework in Frameworks */,
+				E7B0C933225F52C400960076 /* OpenGLES.framework in Frameworks */,
+				E7B0C931225F52BC00960076 /* libz.tbd in Frameworks */,
+				E7B0C92F225F52B500960076 /* libc++.tbd in Frameworks */,
+				E7B0C92D225F52A800960076 /* ImageIO.framework in Frameworks */,
+				E7B0C92B225F529F00960076 /* GLKit.framework in Frameworks */,
+				E7B0C929225F529500960076 /* CoreText.framework in Frameworks */,
+				E7B0C927225F528E00960076 /* CoreTelephony.framework in Frameworks */,
+				E7B0C925225F528300960076 /* CoreLocation.framework in Frameworks */,
+				E7B0C923225F527B00960076 /* CoreImage.framework in Frameworks */,
+				E7B0C921225F526F00960076 /* CoreGraphics.framework in Frameworks */,
+				E7B0C91F225F526800960076 /* CoreData.framework in Frameworks */,
+				E7B0C91D225F525C00960076 /* Accelerate.framework in Frameworks */,
+				E7B0C917225F4F0B00960076 /* GoogleMaps.framework in Frameworks */,
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				11D1A2F320CAFA9E000508D9 /* libRCTAnimation.a in Frameworks */,
+				E7B0C915225F4EC800960076 /* GoogleMapsBase.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
+				E7B0C919225F4F3600960076 /* GoogleMapsCore.framework in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
@@ -522,16 +608,16 @@
 				3DAD3EA71DF850E9000B6D8A /* libyoga.a */,
 				3DAD3EA91DF850E9000B6D8A /* libcxxreact.a */,
 				3DAD3EAB1DF850E9000B6D8A /* libcxxreact.a */,
-				3DAD3EAD1DF850E9000B6D8A /* libjschelpers.a */,
-				3DAD3EAF1DF850E9000B6D8A /* libjschelpers.a */,
 				2DF0FFDF2056DD460020B375 /* libjsinspector.a */,
 				2DF0FFE12056DD460020B375 /* libjsinspector-tvOS.a */,
 				2DF0FFE32056DD460020B375 /* libthird-party.a */,
 				2DF0FFE52056DD460020B375 /* libthird-party.a */,
 				2DF0FFE72056DD460020B375 /* libdouble-conversion.a */,
 				2DF0FFE92056DD460020B375 /* libdouble-conversion.a */,
-				2DF0FFEB2056DD460020B375 /* libprivatedata.a */,
-				2DF0FFED2056DD460020B375 /* libprivatedata-tvOS.a */,
+				E7B0C8EC225F4B1100960076 /* libjsi.a */,
+				E7B0C8EE225F4B1100960076 /* libjsiexecutor.a */,
+				E7B0C8F0225F4B1100960076 /* libjsi-tvOS.a */,
+				E7B0C8F2225F4B1100960076 /* libjsiexecutor-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -539,6 +625,21 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E7B0C938225F52E000960076 /* UIKit.framework */,
+				E7B0C936225F52D600960076 /* SystemConfiguration.framework */,
+				E7B0C934225F52CE00960076 /* QuartzCore.framework */,
+				E7B0C932225F52C400960076 /* OpenGLES.framework */,
+				E7B0C930225F52BC00960076 /* libz.tbd */,
+				E7B0C92E225F52B500960076 /* libc++.tbd */,
+				E7B0C92C225F52A800960076 /* ImageIO.framework */,
+				E7B0C92A225F529F00960076 /* GLKit.framework */,
+				E7B0C928225F529500960076 /* CoreText.framework */,
+				E7B0C926225F528D00960076 /* CoreTelephony.framework */,
+				E7B0C924225F528300960076 /* CoreLocation.framework */,
+				E7B0C922225F527B00960076 /* CoreImage.framework */,
+				E7B0C920225F526F00960076 /* CoreGraphics.framework */,
+				E7B0C91E225F526800960076 /* CoreData.framework */,
+				E7B0C91C225F525C00960076 /* Accelerate.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
@@ -605,6 +706,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				B917068CBEA7455398F45C1C /* Resources */,
+				E7B0C8C5225F4B1100960076 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -632,12 +734,59 @@
 			sourceTree = "<group>";
 		};
 		B917068CBEA7455398F45C1C /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
+				F1B2CA98F5EC4DB984078B00 /* YTPlayerView-iframe-player.html */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
-			path = "";
+		};
+		E7B0C8C5225F4B1100960076 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				E7B0C918225F4F3600960076 /* GoogleMapsCore.framework */,
+				E7B0C916225F4F0B00960076 /* GoogleMaps.framework */,
+				E7B0C914225F4EC700960076 /* GoogleMapsBase.framework */,
+				FD5F9775ACB948ED9FD78F81 /* libAirMaps.a */,
+				F70F6BA1DDED498296B88FA5 /* libTextToSpeech.a */,
+				DA8F4A1299B64A3BBE22D985 /* libVoice.a */,
+				36A9F0E6AEA248A19AF34F25 /* libRCTYouTube.a */,
+				E7B0C91A225F509200960076 /* GoogleMaps.bundle */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		E7B0C8F3225F4B1200960076 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7B0C900225F4B1300960076 /* libRCTYouTube.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E7B0C8F5225F4B1200960076 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7B0C8FD225F4B1300960076 /* libAirMaps.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E7B0C8F7225F4B1300960076 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7B0C903225F4B1300960076 /* libTextToSpeech.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E7B0C8F9225F4B1300960076 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7B0C906225F4B1300960076 /* libVoice.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -751,6 +900,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = E7B0C8F5225F4B1200960076 /* Products */;
+					ProjectRef = 0FA341BA5E784B14A85A2209 /* AirMaps.xcodeproj */;
+				},
+				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -795,8 +948,20 @@
 					ProjectRef = 139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */;
 				},
 				{
+					ProductGroup = E7B0C8F3225F4B1200960076 /* Products */;
+					ProjectRef = AA0C910C2A36450A923BF31D /* RCTYouTube.xcodeproj */;
+				},
+				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = E7B0C8F7225F4B1300960076 /* Products */;
+					ProjectRef = 765AAD4752CB4DA78473D834 /* TextToSpeech.xcodeproj */;
+				},
+				{
+					ProductGroup = E7B0C8F9225F4B1300960076 /* Products */;
+					ProjectRef = 953900CEF36E4B69ACFA4228 /* Voice.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -929,20 +1094,6 @@
 			remoteRef = 2DF0FFE82056DD460020B375 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2DF0FFEB2056DD460020B375 /* libprivatedata.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libprivatedata.a;
-			remoteRef = 2DF0FFEA2056DD460020B375 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2DF0FFED2056DD460020B375 /* libprivatedata-tvOS.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libprivatedata-tvOS.a";
-			remoteRef = 2DF0FFEC2056DD460020B375 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		3DAD3E841DF850E9000B6D8A /* libRCTImage-tvOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1020,20 +1171,6 @@
 			remoteRef = 3DAD3EAA1DF850E9000B6D8A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3DAD3EAD1DF850E9000B6D8A /* libjschelpers.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libjschelpers.a;
-			remoteRef = 3DAD3EAC1DF850E9000B6D8A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3DAD3EAF1DF850E9000B6D8A /* libjschelpers.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libjschelpers.a;
-			remoteRef = 3DAD3EAE1DF850E9000B6D8A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1069,6 +1206,62 @@
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E7B0C8EC225F4B1100960076 /* libjsi.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsi.a;
+			remoteRef = E7B0C8EB225F4B1100960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C8EE225F4B1100960076 /* libjsiexecutor.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjsiexecutor.a;
+			remoteRef = E7B0C8ED225F4B1100960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C8F0225F4B1100960076 /* libjsi-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libjsi-tvOS.a";
+			remoteRef = E7B0C8EF225F4B1100960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C8F2225F4B1100960076 /* libjsiexecutor-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libjsiexecutor-tvOS.a";
+			remoteRef = E7B0C8F1225F4B1100960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C8FD225F4B1300960076 /* libAirMaps.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAirMaps.a;
+			remoteRef = E7B0C8FC225F4B1300960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C900225F4B1300960076 /* libRCTYouTube.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTYouTube.a;
+			remoteRef = E7B0C8FF225F4B1300960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C903225F4B1300960076 /* libTextToSpeech.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTextToSpeech.a;
+			remoteRef = E7B0C902225F4B1300960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E7B0C906225F4B1300960076 /* libVoice.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libVoice.a;
+			remoteRef = E7B0C905225F4B1300960076 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1083,8 +1276,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7B0C91B225F509200960076 /* GoogleMaps.bundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				A372F219D5984BDC8EB4AADB /* YTPlayerView-iframe-player.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1207,9 +1402,23 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = rmiTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1239,9 +1448,23 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = rmiTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1272,6 +1495,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = rmi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1297,6 +1531,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = rmi/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1329,8 +1574,22 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = "rmi-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1369,8 +1628,22 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = "rmi-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1408,8 +1681,22 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = "rmi-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1447,8 +1734,22 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-voiceiosVoice",
+					"$(SRCROOT)..\node_modules\neact-native-youtube/**",
+				);
 				INFOPLIST_FILE = "rmi-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
