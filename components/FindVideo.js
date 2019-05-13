@@ -4,9 +4,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const FindVideo = props => {
     return (
         <TouchableOpacity title="Find POI" onPress={props.findvid}>
-        	<View style={styles.button}>
-            	<Text style={styles.buttonText}>FindPOI</Text>
-          	</View>
+          <View style={styles.button}>
+              <Text style={styles.buttonText}>FindPOI</Text>
+            </View>
         </TouchableOpacity>
     );
 };
@@ -27,6 +27,5 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
-
 
 export default FindVideo;

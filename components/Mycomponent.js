@@ -4,9 +4,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const Mycomponent = props => {
     return (
         <TouchableOpacity title="setta" onPress={props.cambia}>
-        	<View style={styles.button}>
-            	<Text style={styles.buttonText}>set video lis</Text>
-          	</View>
+          <View style={styles.button}>
+              <Text style={styles.buttonText}>set video lis</Text>
+            </View>
         </TouchableOpacity>
     );
 };
@@ -27,6 +27,5 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
-
 
 export default Mycomponent;

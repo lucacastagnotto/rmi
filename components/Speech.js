@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
 export default Speech;
 
 /*
-
 0: {id: "es-us-x-sfb#male_3-local", name: "es-us-x-sfb#male_3-local", language: "es-US"}
 1: {id: "fi-FI-language", name: "fi-FI-language", language: "fi-FI"}
 2: {id: "it-it-x-kda#male_2-local", name: "it-it-x-kda#male_2-local", language: "it-IT"}
@@ -117,5 +116,4 @@ export default Speech;
 81: {id: "fr-fr-x-vlf#female_1-local", name: "fr-fr-x-vlf#female_1-local", language: "fr-FR"}
 82: {id: "it-it-x-kda-local", name: "it-it-x-kda-local", language: "it-IT"}
 83: {id: "si-LK-language", name: "si-LK-language", language: "si-LK"}
-
 */
