@@ -134,10 +134,10 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-youtube')
-    compile project(':react-native-voice')
-    compile project(':react-native-tts')
-    compile project(':react-native-maps')
+    //compile project(':react-native-youtube')
+    //compile project(':react-native-voice')
+    //compile project(':react-native-tts')
+    //compile project(':react-native-maps')
     implementation project(':react-native-youtube')
     implementation project(':react-native-voice')
     implementation project(':react-native-tts')
