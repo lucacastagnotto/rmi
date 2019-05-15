@@ -103,7 +103,8 @@ export default class App extends Component<Props> {
           if(this.state.ready_to_listen){
             console.log("ready_to_listen is true");
             this.setState({ ready_to_listen: false });
-            this.playAnnotation("why");
+            let myann = Object.assign({}, this.state.markers[this.state.current_poi].why[0]);
+            this.playAnnotation(myann);
           }
         }
       }
@@ -393,13 +394,12 @@ export default class App extends Component<Props> {
     var i = 0;
     if(this.state.markers.length != 0){
       while((i<this.state.markers.length) && (!trovato)){
-        if(this.state.markers[i].id.substring(0,11) == rmistring.substring(0,11)){
+        if(this.state.markers[i].id == rmistring.substring(0,11)){
           //il marker esiste già (questa specifica annotazione invece no, la dobbiamo comunque creare e aggiungerla a what[]/why[]/how[])
           console.log("aggiungo annotazione di una stringa già esistente");
           trovato = true;
           var newmark = update(this.state.markers, {
-            [i]: {[type_of_annotation]: {$push: [{type_of_file: type_of_file, value: content, visited: false}]}}  
-            //a: {b: {$push: [9]}}
+            [i]: {[type_of_annotation]: {$push: [{type_of_file: type_of_file, value: content, hoormi_str: rmistring, visited: false}]}}  
           });
           this.setState({
             markers: newmark
@@ -414,7 +414,7 @@ export default class App extends Component<Props> {
       var newmark = {
         latitude: null, 
         longitude: null,
-        id: rmistring, 
+        id: rmistring.substring(0,11), //è il plus code che definisce tale POI
         title: null,
         key: nextkey,
         what: [],
@@ -431,14 +431,14 @@ export default class App extends Component<Props> {
       var dbpedia_value = await this.dbpedia(newmark.title);
       console.log("db:::."+dbpedia_value);
       if(dbpedia_value != undefined) {
-        newmark.why.push({type_of_file: "text", value: dbpedia_value, visited: false});
+        newmark.why.push({type_of_file: "text", value: dbpedia_value, hoormi_str: null, visited: false});
       }
       else {
         var check_title = await this.wiki(newmark.title);
         if(check_title != newmark.title) {
           let promise = await this.dbpedia(check_title);
           if(promise != undefined) {
-            newmark.why.push({type_of_file: "text", value: promise, visited: false});
+            newmark.why.push({type_of_file: "text", value: promise, hoormi_str: null, visited: false});
           }
         }
       }
@@ -446,6 +446,7 @@ export default class App extends Component<Props> {
       newmark[type_of_annotation].push({
         type_of_file: type_of_file,
         value: content, //se video-->videoID, se testo-->testo, altro...
+        hoormi_str: rmistring,
         visited: false
       })
       this.setState(prevState => ({
@@ -526,50 +527,6 @@ export default class App extends Component<Props> {
     );
   }
 
-  playAnnotation = (typoo) => {
-    //stoppa prima un'eventuale annotazione in riproduzione
-    this.pause();
-    var my_ann = this.state.markers[this.state.current_poi][typoo]; 
-
-    var i = 0; //cicli 
-    while(i<my_ann.length){
-      if(my_ann[i].visited){
-        i++;
-      } 
-      else {
-        if(my_ann[i].type_of_file == "text"){
-          this.setState({
-            text_to_read: my_ann[i].value
-          });
-          this.readText();
-        }
-        else if(my_ann[i].type_of_file == "video") {
-          this.setState({
-            yt_status: true,
-            yt_id: my_ann[i].value,
-            isPlaying: true
-          });
-        }
-        this.setState({
-          again: my_ann[i],
-          stopped: false,
-          lastTypeAnn: typoo,
-          buttonstatus: "STOP"
-        });
-        var updated_markers = update(this.state.markers, {
-          [this.state.current_poi]: {[typoo]: {[i]: {visited: {$set: true}}}}
-        });
-        this.setState({
-          markers: updated_markers
-        });
-        break;
-      }
-      if(i>=my_ann.length){
-        console.log("Non ci sono altri soundbite in lista");
-      }
-    }
-  }
-
   setCurrentPosition = (position) => { 
     this.setState(prevState => ({
       myLocation: {
@@ -582,40 +539,10 @@ export default class App extends Component<Props> {
     }));
   }
 
-  watchCurrentPosition = () => { 
-    let watchid=navigator.geolocation.watchPosition(position => {  
-      this.setState(prevState => ({
-        myLocation: {
-          ...prevState.myLocation,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.002,
-          longitudeDelta: 0.005
-        }
-      })); 
-      console.log(position.coords.latitude);
-      alert("meow");
-      //doesn't work in emulator 
-      /*if(this.state.trip_started){
-        if(this.getDistance()<20){
-          console.log("distance is ok");
-          if(this.state.ready_to_listen){
-            console.log("ready_to_listen is true");
-            this.setState({ ready_to_listen: false });
-            this.playAnnotation();
-          }
-        }
-      }*/
-      navigator.geolocation.clearWatch(watchid);
-    }, error => console.log(err), this.options
-    );
-  }
-
   initLocationProcedure = () => {
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => { 
         this.setCurrentPosition(position); //Inizializza myLocation
-        //this.watchCurrentPosition(); //Aggiorna costantemente myLocation
       }, err => console.log(err), this.options
     );
     } else {
@@ -626,11 +553,12 @@ export default class App extends Component<Props> {
   initUserPreferences = async () => {
     let user = await this.getUserKey();
     user = JSON.parse(user);
-    //console.log(user);
+    if(user.lang == null){
+      user.lang = "en";
+    }
     this.setState({
       user_language: user.lang
     })
-    //if(user_language == "undefined"){alert("Choose a language!")}
   }
 
   wiki = (title) => {
@@ -783,11 +711,69 @@ osm_call = async (lat, lng) => {
     });
   }
 
-  //BACK: ri-riproduce il soundbite che precede l'ultimo riprodotto
+  playAnnotation = (my_ann) => {
+    //gestisci eccezioni:
+    //  l'annotazione che si vuole riprodurre in realtà non esiste
+    //
+    this.pause();
+    if(my_ann.type_of_file == "text"){
+      this.setState({
+        text_to_read: my_ann.value
+      });
+      this.readText();
+    }
+    else if(my_ann.type_of_file == "video"){
+      this.setState({
+        yt_status: true,
+        yt_id: my_ann.value,
+        isPlaying: true
+      });
+    }
+    var typoo = "why"; //faccio questo perché le annotazioni dbpedia hanno 'null' nel campo hoormi_str e in quel caso sono di tipo 'why'
+    if(my_ann.hoormi_str != null){
+      let tipo = my_ann.hoormi_str.match(/(why|how|what){1}?/);
+      typoo = tipo[0];
+    }
+    let index = this.state.markers[this.state.current_poi][typoo].findIndex(x => x.visited == false);
+    this.setState({
+      again: my_ann,
+      stopped: false,
+      lastTypeAnn: typoo,
+      buttonstatus: "STOP"
+    });
+    var updated_markers = update(this.state.markers, {
+      [this.state.current_poi]: {[typoo]: {[index]: {visited: {$set: true}}}}
+    });
+    this.setState({
+      markers: updated_markers
+    });
+  }
+
+  
+
+  //COMANDI:
 
   //MORE: riproduce il soundbite successivo dello stesso tipo dell'ultimo riprodotto
   getMore = () => {
-    this.playAnnotation(this.state.lastTypeAnn);
+    var my_ann = this.state.markers[this.state.current_poi][this.state.lastTypeAnn];
+    var i = 0;
+    while(i<my_ann.length){
+      if(my_ann[i].visited){
+        i++;
+      }
+      else{
+        this.playAnnotation(my_ann[i]);
+        break;
+      }
+    }
+    if(i>=my_ann.length){
+      console.log("Non ci sono altri soundbite da riprodurre");
+    }
+  }
+
+  //AGAIN: ripete l'ultimo soundbite riprodotto
+  playAgain = () => {
+
   }
 
   getGeoLocation = () => {
@@ -806,6 +792,12 @@ osm_call = async (lat, lng) => {
     /*<TouchableOpacity onPress={this.shownhide}>
           <Text>SHOWNHIDE</Text>
         </TouchableOpacity>
+
+        <View>
+          <TouchableOpacity onPress={this.getGeoLocation}>
+            <Text>get geolocation.navigator</Text>
+          </TouchableOpacity>
+        </View>
       */
     return (
       <View style={styles.container}
@@ -840,12 +832,6 @@ osm_call = async (lat, lng) => {
         <View>
           <TouchableOpacity onPress={this.printstate}>
             <Text>Stampami</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View>
-          <TouchableOpacity onPress={this.getGeoLocation}>
-            <Text>get geolocation.navigator</Text>
           </TouchableOpacity>
         </View>
 
