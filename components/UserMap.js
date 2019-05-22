@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
@@ -12,12 +12,42 @@ const UserMap = props => {
 		/>
 	));
 
+	setfollow = (val) => {
+		props.changefollow(val);
+	}
+
+	getfollow = () => {
+		console.log("getfollow: "+ props.follow);
+		return(props.follow);
+	}
+
+	getloc = () => {
+		return(props.myLocation);
+	}
+
 	return (
 		<View style={styles.mapContainer}>
 			<MapView
+				ref={component => {
+	              this.mymap = component;
+	            }}
 				provider={ PROVIDER_GOOGLE }
-			    region={props.myLocation} 
-			    showsUserLocation={true}
+				//initialRegion={props.myLocation}
+				showsUserLocation={true}
+				//initialRegion={{latitude: 44.494623, longitude: 11.346900, latitudeDelta: 0.002, longitudeDelta: 0.005}}
+				followUserLocation={props.follow}
+				//EVENTI
+				onMoveShouldSetResponder={(e) => setfollow(false)}
+				onUserLocationChange={(event) => {
+					console.log("animatetoregion: "+ event.nativeEvent.coordinate.latitude + " "+ event.nativeEvent.coordinate.longitude);
+					if(props.follow){
+						const newRegion = event.nativeEvent.coordinate;
+						this.mymap.animateToRegion({
+							latitude: newRegion.latitude, longitude: newRegion.longitude, 
+							latitudeDelta: 0.002, longitudeDelta: 0.005}, 1000);
+					}
+				}}
+			    //region={props.myLocation} 
 			    style={styles.map} 
 			>
 				{set_markers}
@@ -29,9 +59,29 @@ const UserMap = props => {
 				    strokeWidth={3}
 	        		strokeColor="hotpink"
 	        		mode="walking"
-	        		//optimizeWaypoints="true"
+	        		optimizeWaypoints="true"
+	        		onStart={(params) => {
+		            }}
 				/>
 			</MapView>
+			<View
+			    style={{
+			        position: 'absolute',//use absolute position to show button on top of the map
+			        top: '80%', //for center align
+			        alignSelf: 'flex-end', //for align to right
+			        marginBottom: 36,
+			        marginRight: 100
+			    }}
+			>
+			    <TouchableOpacity style={styles.flwusrloc} onPress={ () => {
+			    	this.setfollow(true); 
+			    	myloc = getloc();
+		    		this.mymap.animateToRegion({
+						latitude: myloc.latitude, longitude: myloc.longitude, 
+						latitudeDelta: 0.002, longitudeDelta: 0.005}, 1000); }}
+				>
+				</TouchableOpacity>
+			</View>
 		</View>
 	);
 };
@@ -39,13 +89,20 @@ const UserMap = props => {
 const styles = StyleSheet.create({
 	mapContainer: {
     width: '100%',
-    height: 200,
+    height: 300,
     marginTop: 20
   },
   map: {
     width: '100%',
     height: '100%'
-  } 
+  },
+  flwusrloc: {
+  	backgroundColor: 'blue',
+    borderRadius: 50,
+    marginRight: 36,
+    width: 14,
+    height: 14
+  }
 });
 
 export default UserMap;

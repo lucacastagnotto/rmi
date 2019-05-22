@@ -14,7 +14,7 @@ GeoMock is licensed under the MIT license.
     if (navigator.geolocation == null) {
       window.navigator.geolocation = {};
     }
-    navigator.geolocation.delay = 1000;
+    navigator.geolocation.delay = 5000;
     navigator.geolocation.shouldFail = false;
     navigator.geolocation.failsAt = -1;
     navigator.geolocation.errorMessage = "There was an error retrieving the position!";
@@ -22,7 +22,8 @@ GeoMock is licensed under the MIT license.
     navigator.geolocation.lastPosReturned = 0;
     navigator.geolocation._sanitizeLastReturned = function() {
       if (this.lastPosReturned > this.waypoints.length - 1) {
-        return this.lastPosReturned = (this.waypoints.length - 1);
+        //return this.lastPosReturned = (this.waypoints.length - 1);
+        return this.lastPosReturned = 0;
       }
     };
     navigator.geolocation._geoCall = function(method, success, error) {
@@ -53,20 +54,44 @@ GeoMock is licensed under the MIT license.
     return navigator.geolocation.waypoints = [
       {
         coords: {
-          latitude: 44.494972, 
-          longitude: 11.342024,
+          //Torre Asinelli
+          latitude: 44.494251, 
+          longitude: 11.346566,
           accuracy: 1
         }
       }, {
         coords: {
-          latitude: 44.494030, 
-          longitude: 11.342668,
+          //San Luca
+          latitude: 44.479114, 
+          longitude: 11.297597,
           accuracy: 1
         }
       }, {
         coords: {
-          latitude: 44.493563, 
-          longitude: 11.343065,
+          //Basilica di San Petronio
+          latitude: 44.493395, 
+          longitude: 11.343128,
+          accuracy: 1
+        }
+      }, {
+        coords: {
+          //Medica Palace
+          latitude: 44.495775, 
+          longitude: 11.340572,
+          accuracy: 1
+        }  
+      }, {
+        coords: {
+          //Palazzo Re Enzo
+          latitude: 44.494401, 
+          longitude: 11.342880,
+          accuracy: 1
+        }
+      }, {
+        coords: {
+          //Palazzo Fava
+          latitude: 44.496499, 
+          longitude: 11.342296,
           accuracy: 1
         }
       }

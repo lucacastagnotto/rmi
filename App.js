@@ -21,7 +21,13 @@ type Props = {};
 export default class App extends Component<Props> {
 
   state = {
-    myLocation: null,
+    //myLocation: null,
+    myLocation: {
+      latitude: 44.494412, 
+      longitude: 11.346656,
+      latitudeDelta: 0.002,
+      longitudeDelta: 0.005
+    },
     markers: [],
     text_to_read: "This is Hoormi",
     ttsStatus: "initializing",
@@ -47,7 +53,9 @@ export default class App extends Component<Props> {
     fullscreen: false,
     containerWidth: null,
     yt_status: false, //toggleClass di YouTube
-    buttonstatus: "START" //toggleClass di Go/Stop
+    seekto: false,
+    followUserLocation: true,
+    buttonstatus: "CERCA" //toggleClass di Go/Stop
   }
 
   options = {
@@ -59,7 +67,7 @@ export default class App extends Component<Props> {
   constructor(props){
     super(props);
     console.disableYellowBox = true;
-    this.initLocationProcedure();
+    //this.initLocationProcedure();
     this.initUserPreferences();
     Tts.addEventListener("tts-start", event =>
       this.setState({ ttsStatus: "started" })
@@ -80,10 +88,10 @@ export default class App extends Component<Props> {
     Tts.getInitStatus().then(this.initTts()); 
     //this.fakeInitSearch();
     //this.watchCurrentPosition();
+    this.changefollow = this.changefollow.bind(this);
   }
 
   componentDidMount(){
-    navigator.geolocation.delay = 5000;
     var watchid;
     watchid=navigator.geolocation.watchPosition(position => { 
       console.log("position: "+ position.coords.latitude + "," + position.coords.longitude); 
@@ -95,10 +103,13 @@ export default class App extends Component<Props> {
           latitudeDelta: 0.002,
           longitudeDelta: 0.005
         }
-      })); 
-      console.log("pp: "+ position.coords.latitude);
+      }));
       if(this.state.trip_started){
-        if(this.getDistance()<100){
+        let myloc = Object.assign({}, this.state.myLocation);
+        let nextpoi = Object.assign({}, this.state.markers[this.state.current_poi])
+        let distanza = this.getDistance(myloc, nextpoi); console.log("distanza: "+ distanza);
+        //if(this.getDistance()<100){
+        if(distanza < 100){
           console.log("distance is ok");
           if(this.state.ready_to_listen){
             console.log("ready_to_listen is true");
@@ -150,15 +161,6 @@ export default class App extends Component<Props> {
     return user;
   }
 
-  shownhide = () => {
-    if(this.state.yt_status) {
-      this.setState({ yt_status: false })
-    }
-    else {
-      this.setState({ yt_status: true })
-    }
-  }
-
   initTts = async () => {
     try {
       await Tts.setDefaultLanguage('en-US');
@@ -166,13 +168,22 @@ export default class App extends Component<Props> {
       // My Samsung S9 has always this error: "Language is not supported"
       console.log(`setDefaultLanguage error `, err);
     }
-    await Tts.setDefaultVoice('en-us-x-sfg#male_1-local');
+    var myvoice;
+    if( Platform.OS === 'android' ){
+      await Tts.setDefaultVoice('en-us-x-sfg#male_1-local');
+      myvoice = "en-us-x-sfg#male_1-local";
+    }
+    else if( Platform.OS === 'ios' ){
+      await Tts.setDefaultVoice("com.apple.ttsbundle.Samantha-compact");
+      myvoice = "com.apple.ttsbundle.Samantha-compact";
+    }
     this.setState({
-        selectedVoice: 'en-us-x-sfg#male_1-local',
+        selectedVoice: myvoice,
         ttsStatus: "initialized"
     });
   }
 
+/*
   fakeInitSearch = async () => {
     this.setState({
       markers: []
@@ -187,7 +198,7 @@ export default class App extends Component<Props> {
     this.setState({
       ready_to_listen: true
     });
-  }
+  } */
 
   get_next = (char) => {
   var nextItem;
@@ -327,6 +338,24 @@ export default class App extends Component<Props> {
       });
   }
 
+  getYTDuration = (id_vid) => {
+    var url = "https://www.googleapis.com/youtube/v3/videos?id="+ id_vid +"&part=contentDetails&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+    console.log(url);
+    return fetch(url, {
+      method: "GET",
+    })
+      .then(res => res.json())
+      .then(
+        (data) => { 
+          console.log(data);
+          return(data.items[0].contentDetails.duration);
+        } 
+      )
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   searchHoormiStrings = async () => {
     //pulire dalle ricerche precedenti
     //prendere city_code rispetto alla posizione dell'utente
@@ -336,7 +365,7 @@ export default class App extends Component<Props> {
     //chiama initMarkersAnnotations
     this.setState({
       markers: []
-    })
+    });
 
     var myloc = this.state.myLocation.latitude + "," + this.state.myLocation.longitude;
     var city_code = await this.searchPlusCodes(myloc);
@@ -344,7 +373,7 @@ export default class App extends Component<Props> {
     var search_boxes = this.find_close_boxes(city_code);
     var video_list = [];
     //YouTube
-    var i = 0; //cicli for
+    var i, z = 0; //cicli for
     for(i=0; i<9; i++){
       var result = await this.YTube(search_boxes[i]);
       if(result.pageInfo.totalResults != (0 || undefined)){
@@ -358,11 +387,37 @@ export default class App extends Component<Props> {
     var hoormi_str = [];
     for(i=0; i<video_list.length; i++){
       video_list[i].description = await this.get_YTdescription(video_list[i].id.videoId);
-      let response = video_list[i].description.match(regex);
+      let response = video_list[i].description.match(regex); 
       if(response != null){
-        for(let z=0; z<response.length; z++){
+        var start = 0;
+        for(z=0; z<response.length; z++){ 
           let type_of_ann = response[z].match(/(why|how|what){1}?/);
-          hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId });
+          var durata = response[z].match(/([0-9]){1,4}s/); 
+          if(durata == null){
+            durata = await this.getYTDuration(video_list[i].id.videoId);
+            console.log("DUUUUURATA: "+ durata)
+            let regex1 = /[0-9]{1,2}M/g;
+            let regex2 = /[0-9]{1,2}S/g;
+            let min = durata.match(regex1);
+            if(min != null){
+              min[0] = min[0].substring(0, min[0].length - 1); console.log("MINUTI: "+ min[0]);
+              min[0] = parseFloat(min[0]);
+              min[0] = min[0] * 60;
+            }
+            else
+              min = [0];
+            let sec = durata.match(regex2);
+            sec[0] = sec[0].substring(0, sec[0].length - 1); console.log("SECONDI: "+ sec[0]);
+            sec[0] = parseFloat(sec[0]);
+            durata = [min[0] + sec[0]]; console.log("DURATA: "+ durata[0]);  
+            hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: 0, duration: durata[0] });
+          }
+          else {
+            durata[0] = durata[0].substring(0, durata[0].length - 1); console.log("durata aggiustata: "+ durata[0]);
+            durata[0] = parseFloat(durata[0]);
+            hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: start, duration: durata[0] });
+            start = start + durata[0];
+          }
         }
       }
       else
@@ -379,16 +434,43 @@ export default class App extends Component<Props> {
     var promise;
     for(i=0; i<hoormi_str.length; i++){
       //promise = await this.initMarkersWithAnnotations("8FPHF8VV+57:why:ita:his-art", "video", "DCBRsxLCV40", "why");
-      promise = await this.initMarkersWithAnnotations(hoormi_str[i].str, "video", hoormi_str[i].video_id, hoormi_str[i].type);
+      promise = await this.initMarkersWithAnnotations(hoormi_str[i].str, "video", hoormi_str[i].video_id, hoormi_str[i].type, hoormi_str[i].start, hoormi_str[i].duration);
     }
-    this.setState({
-      trip_started: true,
-      ready_to_listen: true
-    });
-    
+    if(this.state.markers.length > 0){
+      var order = await this.getDirections(); 
+      console.log("order: "+ order);
+      this.mergeMarkers(order);
+      this.setState({
+        buttonstatus: "START"
+      });
+    } 
+    else
+      console.log("Non ci sono annotazioni nelle vicinanze");
   }
 
-  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation) => {
+  mergeMarkers = (order) => {
+    var idx = order[order.length-1]; //indice dell'elemento destination
+    console.log("rimuovo: "+ idx);
+    //rimuovo destination e copio markers
+    //ordino markers
+    //markers.push destination 
+    var ordered_markers = update(this.state.markers, {
+      $splice: [[[idx], 1]]
+    }); 
+
+    var ordinato = [];
+
+    for(var i=0; i<order.length-1; i++){
+      ordinato.push(ordered_markers[order[i]]);
+    }
+    ordinato.push(this.state.markers[idx]);
+    this.setState({
+      markers: ordinato
+    });
+
+  }
+
+  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation, start, duration) => {
 
     var trovato = false;
     var i = 0;
@@ -399,7 +481,7 @@ export default class App extends Component<Props> {
           console.log("aggiungo annotazione di una stringa già esistente");
           trovato = true;
           var newmark = update(this.state.markers, {
-            [i]: {[type_of_annotation]: {$push: [{type_of_file: type_of_file, value: content, hoormi_str: rmistring, visited: false}]}}  
+            [i]: {[type_of_annotation]: {$push: [{type_of_file: type_of_file, value: content, hoormi_str: rmistring, start: start, duration: duration, visited: false}]}}  
           });
           this.setState({
             markers: newmark
@@ -429,7 +511,7 @@ export default class App extends Component<Props> {
       newmark.title = await this.osm_call(newmark.latitude, newmark.longitude);
       console.log("check before dbpedia");
       var dbpedia_value = await this.dbpedia(newmark.title);
-      console.log("db:::."+dbpedia_value);
+      console.log("dbpedia value: "+ dbpedia_value);
       if(dbpedia_value != undefined) {
         newmark.why.push({type_of_file: "text", value: dbpedia_value, hoormi_str: null, visited: false});
       }
@@ -447,6 +529,8 @@ export default class App extends Component<Props> {
         type_of_file: type_of_file,
         value: content, //se video-->videoID, se testo-->testo, altro...
         hoormi_str: rmistring,
+        start: start,
+        duration: duration,
         visited: false
       })
       this.setState(prevState => ({
@@ -462,8 +546,9 @@ export default class App extends Component<Props> {
   }
 
   pause = () => {
+    console.log("faccio pausa");
     if(this.state.in_ascolto){
-      if(Platform === 'ios')
+      if(Platform.OS === 'ios')
         Tts.pause();
       else
         Tts.stop();
@@ -487,7 +572,7 @@ export default class App extends Component<Props> {
 
   resume = () => {
     if(this.state.again.type_of_file == "text"){
-      if(Platform === 'ios'){
+      if(Platform.OS === 'ios'){
         Tts.resume();
         this.setState({ 
           in_ascolto: true,
@@ -497,10 +582,10 @@ export default class App extends Component<Props> {
       }
       else
         this.readText();
-        this.setState({ 
-          //in_ascolto: true, viene già fatto in readText()
-          stopped: false,
-          buttonstatus: "STOP"
+      this.setState({ 
+        //in_ascolto: true, viene già fatto in readText()
+        stopped: false,
+        buttonstatus: "STOP"
       }); 
     }
     else if(this.state.again.type_of_file == "video"){
@@ -513,6 +598,7 @@ export default class App extends Component<Props> {
   }
 
   readText = async () => {
+    console.log("read text");
     Tts.stop();
     Tts.speak(this.state.text_to_read);
     this.setState({
@@ -520,10 +606,10 @@ export default class App extends Component<Props> {
     });
   }
 
-  getDistance = () => {
+  getDistance = (origin, destination) => {
     return geolib.getDistance(
-      {latitude: this.state.myLocation.latitude, longitude: this.state.myLocation.longitude},
-      {latitude: this.state.markers[this.state.current_poi].latitude, longitude: this.state.markers[this.state.current_poi].longitude}
+      {latitude: origin.latitude, longitude: origin.longitude},
+      {latitude: destination.latitude, longitude: destination.longitude}
     );
   }
 
@@ -551,11 +637,14 @@ export default class App extends Component<Props> {
   }
 
   initUserPreferences = async () => {
-    let user = await this.getUserKey();
-    user = JSON.parse(user);
-    if(user.lang == null){
-      user.lang = "en";
+    var user = await this.getUserKey();
+    if( user == null ){
+      user = {
+        lang: "en"
+      }
     }
+    else
+      user = JSON.parse(user);
     this.setState({
       user_language: user.lang
     })
@@ -606,23 +695,6 @@ osm_call = async (lat, lng) => {
       console.log(error);
     });
   } 
-
-  ytube = (query) => {
-    var url="https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0&maxResults=15&q="+ query;
-    console.log(url);
-    return fetch(url, {
-      method: "GET",
-    })
-    .then(res => res.json())
-    .then(
-      (data) => { 
-        console.log(data);
-      } 
-    )
-    .catch((error) => {
-      console.log(error);
-    });
-}
 
   dbpedia = async (title) => {
     var coded_title = title.replace(/ /g, "_")
@@ -684,13 +756,21 @@ osm_call = async (lat, lng) => {
   }
 
   toggleClass = () => {
-    console.log("PREMUTO"+ this.state.buttonstatus);
-    if(this.state.buttonstatus == "START"){
-      console.log("STARTED!");
+    console.log("PREMUTO "+ this.state.buttonstatus);
+
+    if(this.state.buttonstatus == "CERCA"){
+      console.log("STO CERCANDO!");
+      //cercare annotations
+      //ordinare annotations
+      //aggiornare buttonstatus
+      this.searchHoormiStrings(); //svolge tutti e tre i compiti
+    }
+    else if(this.state.buttonstatus == "START"){
       this.setState({
-        buttonstatus: "GO",
+        trip_started: true,
+        ready_to_listen: true,
+        buttonstatus: "GO"
       });
-      this.searchHoormiStrings();
     }
     else if(this.state.buttonstatus == "GO"){
       if(this.state.stopped){
@@ -698,8 +778,7 @@ osm_call = async (lat, lng) => {
       }   
       //else do nothing
     }
-    else {
-      //non metto controlli perchè l'unico caso in cui buttonstatus == STOP è se ho premuto GO, quindi so per certo che c'è qualcosa in riproduzione
+    else if(this.state.buttonstatus == "STOP"){
       this.pause();
     }
   }
@@ -707,46 +786,64 @@ osm_call = async (lat, lng) => {
   longPress = () => {
     console.log("onlongpress");
     this.setState({ 
-      buttonstatus: "START"
+      buttonstatus: "CERCA",
+      trip_started: false,
+      ready_to_listen: false
     });
   }
 
-  playAnnotation = (my_ann) => {
+  playAnnotation = async (my_ann) => {
     //gestisci eccezioni:
     //  l'annotazione che si vuole riprodurre in realtà non esiste
     //
-    this.pause();
-    if(my_ann.type_of_file == "text"){
+    if(my_ann != (undefined || null)){
+      await this.pause(); 
       this.setState({
-        text_to_read: my_ann.value
+        again: my_ann //lo faccio ora e non dopo assieme agli altri setState perché ne ho bisogno per seekTo
       });
-      this.readText();
-    }
-    else if(my_ann.type_of_file == "video"){
+      if(my_ann.type_of_file == "text"){
+        this.setState({
+          text_to_read: my_ann.value,
+          yt_status: false
+        });
+        this.readText();
+      }
+      else if(my_ann.type_of_file == "video"){
+        this.setState({
+          yt_status: true,
+          yt_id: my_ann.value,
+          isPlaying: true,
+          seekto: true
+        });
+      }
+      var typoo = "why"; //faccio questo perché le annotazioni dbpedia hanno 'null' nel campo hoormi_str e in quel caso sono di tipo 'why'
+      var index = 0;
+      if(my_ann.hoormi_str != null){
+        let tipo = my_ann.hoormi_str.match(/(why|how|what){1}?/);
+        typoo = tipo[0];
+        var ann_array = this.state.markers[this.state.current_poi][typoo];
+        for(var i=0; i<ann_array.length; i++){
+          if(my_ann.hoormi_str == ann_array[i].hoormi_str){
+            index = i;
+            break;
+          }
+        }
+      }
+      
       this.setState({
-        yt_status: true,
-        yt_id: my_ann.value,
-        isPlaying: true
+        stopped: false,
+        lastTypeAnn: typoo,
+        buttonstatus: "STOP"
+      });
+      var updated_markers = update(this.state.markers, {
+        [this.state.current_poi]: {[typoo]: {[index]: {visited: {$set: true}}}}
+      });
+      this.setState({
+        markers: updated_markers
       });
     }
-    var typoo = "why"; //faccio questo perché le annotazioni dbpedia hanno 'null' nel campo hoormi_str e in quel caso sono di tipo 'why'
-    if(my_ann.hoormi_str != null){
-      let tipo = my_ann.hoormi_str.match(/(why|how|what){1}?/);
-      typoo = tipo[0];
-    }
-    let index = this.state.markers[this.state.current_poi][typoo].findIndex(x => x.visited == false);
-    this.setState({
-      again: my_ann,
-      stopped: false,
-      lastTypeAnn: typoo,
-      buttonstatus: "STOP"
-    });
-    var updated_markers = update(this.state.markers, {
-      [this.state.current_poi]: {[typoo]: {[index]: {visited: {$set: true}}}}
-    });
-    this.setState({
-      markers: updated_markers
-    });
+    else
+      console.log("Non ci sono annotazioni da riprodurre");
   }
 
   
@@ -756,24 +853,87 @@ osm_call = async (lat, lng) => {
   //MORE: riproduce il soundbite successivo dello stesso tipo dell'ultimo riprodotto
   getMore = () => {
     var my_ann = this.state.markers[this.state.current_poi][this.state.lastTypeAnn];
-    var i = 0;
-    while(i<my_ann.length){
-      if(my_ann[i].visited){
-        i++;
+    if(my_ann != ( undefined || null )){
+      var i = 0;
+      while(i<my_ann.length){
+        if(my_ann[i].visited){
+          i++;
+        }
+        else{
+          this.playAnnotation(my_ann[i]);
+          break;
+        }
       }
-      else{
-        this.playAnnotation(my_ann[i]);
-        break;
+      if(i>=my_ann.length){
+        console.log("Non ci sono altri soundbite da riprodurre");
       }
     }
-    if(i>=my_ann.length){
-      console.log("Non ci sono altri soundbite da riprodurre");
+  }
+
+  //PREV: riproduce il soundbite precedente all'ultimo riprodotto
+  goPrev = () => {
+    var my_ann = this.state.markers[this.state.current_poi][this.state.lastTypeAnn];
+    var i = 0;
+    if(my_ann.length == (0 || undefined || null))
+      console.log("Errore: non ci sono annotazioni");
+    else if(this.state.again.hoormi_str == my_ann[0].hoormi_str)
+        console.log("Can't go backwards more");  
+    else{
+      while(i<my_ann.length - 1){
+        if(my_ann[i+1].hoormi_str === this.state.again.hoormi_str){
+          console.log("yes are equal");
+          this.playAnnotation(my_ann[i]);
+          break;
+        }
+        else
+          i++;
+      }
     }
   }
 
   //AGAIN: ripete l'ultimo soundbite riprodotto
   playAgain = () => {
+    var myann = Object.assign({}, this.state.again);
+    this.playAnnotation(myann);
+  }
 
+  //NEXT: passa alla prossima location in lista
+  goNext = () => {
+    this.pause();
+    this.setState( prevState => ({
+      current_poi: prevState.current_poi + 1,
+      ready_to_listen: true
+    }));
+  }
+
+  //BACK: torna indietro di una location in lista
+  goBack = () => {
+    this.pause();
+    this.setState( prevState => ({
+      current_poi: prevState.current_poi - 1,
+      ready_to_listen: true
+    }));
+  }
+
+  //LATER: swap location this con location next
+  goLater = async () => {
+    if(this.state.current_poi < this.state.markers.length - 1){
+      await this.pause();
+      var swap = Object.assign({}, this.state.markers[this.state.current_poi]);
+      var new_order = update( 
+        update(this.state.markers, {
+          $splice: [[[this.state.current_poi], 1]]
+        }), {
+          $splice: [[[this.state.current_poi + 1], 0, swap]]
+        }
+      );
+      this.setState({
+        markers: new_order,
+        ready_to_listen: true
+      });
+    }
+    else
+      console.log("Non ci sono POI succssivi");
   }
 
   getGeoLocation = () => {
@@ -786,46 +946,180 @@ osm_call = async (lat, lng) => {
       console.log("Your browser does not support the Geolocation API!");
     }
   }
+
+  changefollow = (val) => {
+    this.setState({
+      followUserLocation: val
+    });
+  }
+
+  getDirections = () => {
+    var index_max = this.getdis();
+    var waypoints = "";
+    for(var i=0; i<this.state.markers.length; i++){
+      if(i != index_max){
+      waypoints = waypoints.concat("|" + this.state.markers[i].latitude + "," + this.state.markers[i].longitude);
+      }
+    }
+
+    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.markers[index_max].latitude +","+ this.state.markers[index_max].longitude +"&waypoints=optimize:true"+ waypoints +"&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+    console.log(url);
+    return fetch(url, {
+      method: "GET",
+    })
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log(result);
+          var order = result.routes[0].waypoint_order;
+          order.push(index_max);
+          return(order);
+        })
+      .catch((error) => {
+        console.log(error);
+    }); 
+  }
+
+  getdis = () => {
+    //var alldistances = [];
+    var max = -1;
+    var index_max = -1;
+    var origin = Object.assign({}, this.state.myLocation);
+    for(var i=0; i<this.state.markers.length; i++){
+      let destination = Object.assign({}, this.state.markers[i]);
+      let distance = this.getDistance(origin, destination);
+      if(max<distance){
+        max = distance;
+        index_max = i;
+      }
+      //alldistances.push({ myobj: destination, distance: distance});
+    }
+    console.log("destination: "+ this.state.markers[index_max].title);
+    return(index_max);
+  }
+
+  getNumber = (type) => {
+    var myann = this.state.markers[this.state.current_poi];
+    if(myann == (null || undefined)){
+      return("");
+    }
+    else if(myann[type] == (null || undefined)){
+      return(0);
+    }
+    else{
+      return(myann[type].length);
+    }
+  }
   
   render() {
-    //this.printstate();
-    /*<TouchableOpacity onPress={this.shownhide}>
-          <Text>SHOWNHIDE</Text>
-        </TouchableOpacity>
 
-        <View>
-          <TouchableOpacity onPress={this.getGeoLocation}>
-            <Text>get geolocation.navigator</Text>
-          </TouchableOpacity>
-        </View>
-      */
     return (
+
       <View style={styles.container}
         onLayout={({ nativeEvent: { layout: { width } } }) => {
           if (this.state.containerWidth !== width) this.setState({ containerWidth: width });
         }}
       >
-        <UserMap myLocation={this.state.myLocation} poi={this.state.markers} />
+        <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} />
 
         <View>
 
-          <View style={styles.centralButton}>
+          <TouchableOpacity 
+            title="BACK"
+            style={{backgroundColor: 'blue', alignSelf: 'center', marginTop: 10}} 
+            onPress={this.goBack}
+            >
+            <Text style={styles.buttonText}>BACK</Text>
+          </TouchableOpacity>
+
+          <View style={{flexDirection:'row', alignItems: 'center', alignSelf: 'center'}}>
+
+            <TouchableOpacity 
+              title="PREV"
+              style={{backgroundColor: 'blue', alignSelf: 'center', marginRight: 10, marginTop: 8}} 
+              onPress={this.goPrev}
+              >
+              <Text style={styles.buttonText}>PREV</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity 
               title="Go/Stop"
               onPress={this.toggleClass}
               onLongPress={this.longPress}
-              style={styles.button}>
-              <Text style={styles.buttonText}>{this.state.buttonstatus}</Text>
+              style={styles.centralButton}>
+              <Text style={{color: 'white'}}>{this.state.buttonstatus}</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity 
+              title="MORE"
+              style={{backgroundColor: 'blue', alignSelf: 'center', marginLeft: 10, marginTop: 8}} 
+              onPress={this.getMore}
+              >
+              <Text style={styles.buttonText}>MORE</Text>
+            </TouchableOpacity>
+
           </View>
 
           <TouchableOpacity 
-            title="MORE"
-            style={styles.buttonGroup} 
-            onPress={this.getMore}
+            title="NEXT"
+            style={{backgroundColor: 'blue', alignSelf: 'center', marginTop: 10}} 
+            onPress={this.goNext}
             >
-            <Text style={styles.buttonText}>MORE</Text>
+            <Text style={styles.buttonText}>NEXT</Text>
           </TouchableOpacity>
+
+          <View style={{flexDirection:'row'}}>
+
+            <TouchableOpacity 
+              title="AGAIN"
+              style={styles.buttonGroup} 
+              onPress={this.playAgain}
+              >
+              <Text style={styles.buttonText}>AGAIN</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              title="LATER"
+              style={styles.buttonGroup} 
+              onPress={this.goLater}
+              >
+              <Text style={styles.buttonText}>LATER</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              title="WHAT"
+              style={[ styles.buttontype, {marginLeft: 40}]} 
+              onPress={ () => {
+                if(this.state.markers[this.state.current_poi] != (null || undefined))
+                  this.playAnnotation(this.state.markers[this.state.current_poi].what[0])
+              }}
+              >
+              <Text style={{color: 'black', margin: 5}}>WHAT </Text><Text>{this.getNumber("what")}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              title="HOW"
+              style={styles.buttontype} 
+              onPress={ () => {
+                if(this.state.markers[this.state.current_poi] != (null || undefined))
+                  this.playAnnotation(this.state.markers[this.state.current_poi].how[0])
+              }}
+              >
+              <Text style={{color: 'black', margin: 5}}>HOW</Text><Text>{this.getNumber("what")}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              title="WHY"
+              style={styles.buttontype} 
+              onPress={ () => {
+                if(this.state.markers[this.state.current_poi] != (null || undefined))
+                  this.playAnnotation(this.state.markers[this.state.current_poi].why[0])
+              }}
+              >
+              <Text style={{color: 'black', margin: 5}}>WHY</Text><Text>{this.getNumber("what")}</Text>
+            </TouchableOpacity>
+
+          </View>
 
         </View>
 
@@ -839,6 +1133,9 @@ osm_call = async (lat, lng) => {
           {
             this.state.yt_status ?
             <YouTube
+              ref={component => {
+                this.youTubeRef = component;
+              }}
               apiKey="AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"
               videoId={this.state.yt_id}
               play={this.state.isPlaying}
@@ -851,32 +1148,44 @@ osm_call = async (lat, lng) => {
               onError={e => this.setState({ error: e.error })}
               onReady={e => this.setState({ isReady: true })}
               onChangeState={e => {
-                this.setState({ yt_status: e.state });
+                console.log("e.state: "+ e.state);
                 if(e.state == "ended"){
                   this.setState({
-                    isPlaying: false, 
+                    //isPlaying: false, 
                     buttonstatus: "GO"
                   })
                 }
                 else if(e.state == "paused"){
                   this.setState({
-                    isPlaying: false,
+                    //sPlaying: false,
                     stopped: true,
                     buttonstatus: "GO"
                   })
                 }
                 else if(e.state == "playing"){
                   this.setState({
-                    isPlaying: true,
+                    //isPlaying: true,
                     stopped: false,
                     buttonstatus: "STOP"
                   })
                 }
-              }
-              }
+                if(this.state.seekto){
+                  this.youTubeRef.seekTo(this.state.again.start);
+                  this.setState({
+                    seekto: false
+                  });
+                }
+              }}
               onChangeQuality={e => this.setState({ quality: e.quality })}
               onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
-              onProgress={e => this.setState({ duration: e.duration, currentTime: e.currentTime })}
+              onProgress={e => {
+                this.setState({ duration: e.duration, currentTime: e.currentTime }); 
+                console.log("current time: "+ e.currentTime);
+                if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
+                  console.log("devo fermarmi!");
+                  this.pause();
+                }
+              }}
             />
             : 
             <Text>{this.state.text_to_read}</Text> 
@@ -906,13 +1215,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     backgroundColor: 'blue',
-    marginTop: 10
+    marginTop: 10,
+    marginLeft: 10
+  },
+  buttontype: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: 'blue',
+    marginTop: 10,
+    marginLeft: 10
   },
   centralButton: {
+    justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
     backgroundColor: 'red',
-    borderRadius: 60,
+    borderRadius: 50,
     marginTop: 10,
     width: 50,
     height: 50
@@ -923,8 +1243,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonText: {
-    color: 'white'
-    //alignSelf: 'center'
+    color: 'white',
+    margin: 5
   }
 });
 
