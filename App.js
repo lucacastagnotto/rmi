@@ -8,7 +8,7 @@ import TestButton from './components/TestButton';
 import update from 'immutability-helper';
 import geolib from 'geolib';
 import YouTube, { YouTubeStandaloneIOS, YouTubeStandaloneAndroid } from 'react-native-youtube';
-import geomock from './components/geomock';
+//import geomock from './components/geomock';
 
 var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
 var DBPEDIA_KEY = "a87affce-e8fb-4b31-b64c-43d19e64cfcd";
@@ -21,15 +21,10 @@ type Props = {};
 export default class App extends Component<Props> {
 
   state = {
-    //myLocation: null,
-    myLocation: {
-      latitude: 44.494412, 
-      longitude: 11.346656,
-      latitudeDelta: 0.002,
-      longitudeDelta: 0.005
-    },
+    myLocation: null,
     markers: [],
-    text_to_read: "This is Hoormi",
+    showInfo: false,
+    text_to_read: "afvavadsvasdvdv",
     ttsStatus: "initializing",
     selectedVoice: null,
     speechRate: 1,//0.6,
@@ -67,7 +62,7 @@ export default class App extends Component<Props> {
   constructor(props){
     super(props);
     console.disableYellowBox = true;
-    //this.initLocationProcedure();
+    this.initLocationProcedure();
     this.initUserPreferences();
     Tts.addEventListener("tts-start", event =>
       this.setState({ ttsStatus: "started" })
@@ -602,6 +597,7 @@ export default class App extends Component<Props> {
     Tts.stop();
     Tts.speak(this.state.text_to_read);
     this.setState({
+      showInfo: true,
       in_ascolto: true
     });
   }
@@ -810,6 +806,7 @@ osm_call = async (lat, lng) => {
       }
       else if(my_ann.type_of_file == "video"){
         this.setState({
+          showInfo: true,
           yt_status: true,
           yt_id: my_ann.value,
           isPlaying: true,
@@ -1020,177 +1017,91 @@ osm_call = async (lat, lng) => {
           if (this.state.containerWidth !== width) this.setState({ containerWidth: width });
         }}
       >
-        <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} />
 
-        <View>
+        <View style={styles.menuBar}>
+          <TouchableOpacity style={{borderWidth: 2, marginLeft: 0, borderColor: 'green'}}><Text>MyButton</Text></TouchableOpacity>
+          <Text style={{color: 'black', marginLeft: 95, fontSize: 20}}>HOORMI</Text>
+        </View>
 
+        <View style={styles.mapContainer}>
+          <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} />
+        </View>
+
+        { this.state.showInfo && (
+          <View style={styles.ytc}>
+            {
+              this.state.yt_status ?
+              <YouTube
+                ref={component => {
+                  this.youTubeRef = component;
+                }}
+                apiKey="AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"
+                videoId={this.state.yt_id}
+                play={this.state.isPlaying}
+                fullscreen={this.state.fullscreen}
+                controls={1}
+                style={[
+                  { height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) },
+                  styles.player,
+                ]}
+                onError={e => this.setState({ error: e.error })}
+                onReady={e => this.setState({ isReady: true })}
+                onChangeState={e => {
+                  console.log("e.state: "+ e.state);
+                  if(e.state == "ended"){
+                    this.setState({
+                      //isPlaying: false, 
+                      buttonstatus: "GO"
+                    })
+                  }
+                  else if(e.state == "paused"){
+                    this.setState({
+                      //sPlaying: false,
+                      stopped: true,
+                      buttonstatus: "GO"
+                    })
+                  }
+                  else if(e.state == "playing"){
+                    this.setState({
+                      //isPlaying: true,
+                      stopped: false,
+                      buttonstatus: "STOP"
+                    })
+                  }
+                  if(this.state.seekto){
+                    this.youTubeRef.seekTo(this.state.again.start);
+                    this.setState({
+                      seekto: false
+                    });
+                  }
+                }}
+                onChangeQuality={e => this.setState({ quality: e.quality })}
+                onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
+                onProgress={e => {
+                  this.setState({ duration: e.duration, currentTime: e.currentTime }); 
+                  //console.log("current time: "+ e.currentTime);
+                  if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
+                    //console.log("devo fermarmi!");
+                    this.pause();
+                  }
+                }}
+              />
+              : 
+              <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) }} ><Text style={{}}>{this.state.text_to_read}</Text></ScrollView> 
+            }
+          </View>
+          )}
+
+        <View style={styles.controls}>
           <TouchableOpacity 
-            title="BACK"
-            style={{backgroundColor: 'blue', alignSelf: 'center', marginTop: 10}} 
-            onPress={this.goBack}
-            >
-            <Text style={styles.buttonText}>BACK</Text>
-          </TouchableOpacity>
-
-          <View style={{flexDirection:'row', alignItems: 'center', alignSelf: 'center'}}>
-
-            <TouchableOpacity 
-              title="PREV"
-              style={{backgroundColor: 'blue', alignSelf: 'center', marginRight: 10, marginTop: 8}} 
-              onPress={this.goPrev}
-              >
-              <Text style={styles.buttonText}>PREV</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
               title="Go/Stop"
               onPress={this.toggleClass}
               onLongPress={this.longPress}
               style={styles.centralButton}>
-              <Text style={{color: 'white'}}>{this.state.buttonstatus}</Text>
+              <Text style={{color: 'white', fontSize: 10}}>{this.state.buttonstatus}</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity 
-              title="MORE"
-              style={{backgroundColor: 'blue', alignSelf: 'center', marginLeft: 10, marginTop: 8}} 
-              onPress={this.getMore}
-              >
-              <Text style={styles.buttonText}>MORE</Text>
-            </TouchableOpacity>
-
-          </View>
-
-          <TouchableOpacity 
-            title="NEXT"
-            style={{backgroundColor: 'blue', alignSelf: 'center', marginTop: 10}} 
-            onPress={this.goNext}
-            >
-            <Text style={styles.buttonText}>NEXT</Text>
-          </TouchableOpacity>
-
-          <View style={{flexDirection:'row'}}>
-
-            <TouchableOpacity 
-              title="AGAIN"
-              style={styles.buttonGroup} 
-              onPress={this.playAgain}
-              >
-              <Text style={styles.buttonText}>AGAIN</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              title="LATER"
-              style={styles.buttonGroup} 
-              onPress={this.goLater}
-              >
-              <Text style={styles.buttonText}>LATER</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              title="WHAT"
-              style={[ styles.buttontype, {marginLeft: 40}]} 
-              onPress={ () => {
-                if(this.state.markers[this.state.current_poi] != (null || undefined))
-                  this.playAnnotation(this.state.markers[this.state.current_poi].what[0])
-              }}
-              >
-              <Text style={{color: 'black', margin: 5}}>WHAT </Text><Text>{this.getNumber("what")}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              title="HOW"
-              style={styles.buttontype} 
-              onPress={ () => {
-                if(this.state.markers[this.state.current_poi] != (null || undefined))
-                  this.playAnnotation(this.state.markers[this.state.current_poi].how[0])
-              }}
-              >
-              <Text style={{color: 'black', margin: 5}}>HOW</Text><Text>{this.getNumber("what")}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              title="WHY"
-              style={styles.buttontype} 
-              onPress={ () => {
-                if(this.state.markers[this.state.current_poi] != (null || undefined))
-                  this.playAnnotation(this.state.markers[this.state.current_poi].why[0])
-              }}
-              >
-              <Text style={{color: 'black', margin: 5}}>WHY</Text><Text>{this.getNumber("what")}</Text>
-            </TouchableOpacity>
-
-          </View>
-
         </View>
 
-        <View>
-          <TouchableOpacity onPress={this.printstate}>
-            <Text>Stampami</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.ytc}>
-          {
-            this.state.yt_status ?
-            <YouTube
-              ref={component => {
-                this.youTubeRef = component;
-              }}
-              apiKey="AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"
-              videoId={this.state.yt_id}
-              play={this.state.isPlaying}
-              fullscreen={this.state.fullscreen}
-              controls={1}
-              style={[
-                { height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) },
-                styles.player,
-              ]}
-              onError={e => this.setState({ error: e.error })}
-              onReady={e => this.setState({ isReady: true })}
-              onChangeState={e => {
-                console.log("e.state: "+ e.state);
-                if(e.state == "ended"){
-                  this.setState({
-                    //isPlaying: false, 
-                    buttonstatus: "GO"
-                  })
-                }
-                else if(e.state == "paused"){
-                  this.setState({
-                    //sPlaying: false,
-                    stopped: true,
-                    buttonstatus: "GO"
-                  })
-                }
-                else if(e.state == "playing"){
-                  this.setState({
-                    //isPlaying: true,
-                    stopped: false,
-                    buttonstatus: "STOP"
-                  })
-                }
-                if(this.state.seekto){
-                  this.youTubeRef.seekTo(this.state.again.start);
-                  this.setState({
-                    seekto: false
-                  });
-                }
-              }}
-              onChangeQuality={e => this.setState({ quality: e.quality })}
-              onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
-              onProgress={e => {
-                this.setState({ duration: e.duration, currentTime: e.currentTime }); 
-                console.log("current time: "+ e.currentTime);
-                if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
-                  console.log("devo fermarmi!");
-                  this.pause();
-                }
-              }}
-            />
-            : 
-            <Text>{this.state.text_to_read}</Text> 
-          }
-        </View>
       </View>
     );
   }
@@ -1202,14 +1113,54 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
     //justifyContent: 'center',
   },
-  ytc: {
+  menuBar: {
+    height: 100,
+    width: '100%',
+    borderWidth: 5,
+    borderColor: 'red',
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'flex-end'
+  },
+  mapContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    marginBottom: 36
+    width: '100%'
+  },
+  controls: {
+    position: 'absolute',
+    flex: 1,
+    bottom: 0,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderWidth: 2,
+    borderColor: 'blue',
+    height: 150,
+    width: '80%',
+    //opacity: 0.2,
+    marginBottom: 60
+  },
+  centralButton: {    
+    justifyContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: 50,
+    width: 50,
+    height: 50
+  },
+  ytc: {
+    position: 'absolute',
+    flex: 1,
+    top: '20%',
+    //justifyContent: 'center',
+    alignSelf: 'center',
+    //alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'orange',
+    width: '80%'
   },
   player: {
-    alignSelf: 'stretch'//,
-    //bottom: 0,
+    alignSelf: 'stretch'
   },
   buttonGroup: {
     alignItems: 'center',
@@ -1226,16 +1177,6 @@ const styles = StyleSheet.create({
     borderColor: 'blue',
     marginTop: 10,
     marginLeft: 10
-  },
-  centralButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: 'red',
-    borderRadius: 50,
-    marginTop: 10,
-    width: 50,
-    height: 50
   },
   button: {
     flex: 1,
