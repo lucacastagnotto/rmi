@@ -8,6 +8,7 @@ import TestButton from './components/TestButton';
 import update from 'immutability-helper';
 import geolib from 'geolib';
 import YouTube, { YouTubeStandaloneIOS, YouTubeStandaloneAndroid } from 'react-native-youtube';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 //import geomock from './components/geomock';
 
 var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
@@ -24,7 +25,8 @@ export default class App extends Component<Props> {
     myLocation: null,
     markers: [],
     showInfo: false,
-    text_to_read: "afvavadsvasdvdv",
+    gestureName: null,
+    text_to_read: "",
     ttsStatus: "initializing",
     selectedVoice: null,
     speechRate: 1,//0.6,
@@ -114,7 +116,7 @@ export default class App extends Component<Props> {
           }
         }
       }
-    }, error => console.log(err), this.options
+    }, error => console.log(error), this.options
     )
   }
 
@@ -1007,6 +1009,22 @@ osm_call = async (lat, lng) => {
       return(myann[type].length);
     }
   }
+
+  onSwipeUp(gestureState) {
+    console.log("Swipe up!");
+  }
+
+  onSwipeDown(gestureState) {
+    console.log("Swipe down!");
+  }
+
+  onSwipeLeft(gestureState) {
+    console.log("Swipe left!");
+  }
+
+  onSwipeRight(gestureState) {
+    console.log("Swipe right!");
+  }
   
   render() {
 
@@ -1092,7 +1110,14 @@ osm_call = async (lat, lng) => {
           </View>
           )}
 
-        <View style={styles.controls}>
+        
+          <GestureRecognizer
+            onSwipeUp={(state) => this.onSwipeUp(state)}
+            onSwipeDown={(state) => this.onSwipeDown(state)}
+            onSwipeLeft={(state) => this.onSwipeLeft(state)}
+            onSwipeRight={(state) => this.onSwipeRight(state)}
+            style={styles.controls}
+          >
           <TouchableOpacity 
               title="Go/Stop"
               onPress={this.toggleClass}
@@ -1100,7 +1125,8 @@ osm_call = async (lat, lng) => {
               style={styles.centralButton}>
               <Text style={{color: 'white', fontSize: 10}}>{this.state.buttonstatus}</Text>
             </TouchableOpacity>
-        </View>
+          </GestureRecognizer>
+        
 
       </View>
     );
