@@ -850,12 +850,15 @@ osm_call = async (lat, lng) => {
   //COMANDI:
 
   //MORE: riproduce il soundbite successivo dello stesso tipo dell'ultimo riprodotto
-  getMore = () => {
-    var my_ann = this.state.markers[this.state.current_poi][this.state.lastTypeAnn];
-    if(my_ann != ( undefined || null )){
+  goMore = () => {
+    var my_ann = this.state.markers[this.state.current_poi];
+    if(my_ann == (undefined || null))
+      console.log("Non hai ancora scelto una location");
+    else if(my_ann[this.state.lastTypeAnn] != (undefined || null)){
+      my_ann = my_ann[this.state.lastTypeAnn];
       var i = 0;
       while(i<my_ann.length){
-        if(my_ann[i].visited){
+        if(my_ann[i].visited){ //bisogna resettare a 'visited: false' quando si cambia tipo di soundbite o location
           i++;
         }
         else{
@@ -871,16 +874,20 @@ osm_call = async (lat, lng) => {
 
   //PREV: riproduce il soundbite precedente all'ultimo riprodotto
   goPrev = () => {
-    var my_ann = this.state.markers[this.state.current_poi][this.state.lastTypeAnn];
-    var i = 0;
-    if(my_ann.length == (0 || undefined || null))
+    var my_ann = this.state.markers[this.state.current_poi];
+    if(my_ann == (undefined || null)){
+      console.log("Errore: non hai ancora scelto una location valida");
+      return(null);
+    }
+    if(my_ann[this.state.lastTypeAnn] == (undefined || null))
       console.log("Errore: non ci sono annotazioni");
-    else if(this.state.again.hoormi_str == my_ann[0].hoormi_str)
+    else if(this.state.again.hoormi_str == my_ann[this.state.current_poi][0].hoormi_str)
         console.log("Can't go backwards more");  
     else{
+      var i = 0;
       while(i<my_ann.length - 1){
-        if(my_ann[i+1].hoormi_str === this.state.again.hoormi_str){
-          console.log("yes are equal");
+        if(my_ann[this.state.current_poi][i+1].hoormi_str === this.state.again.hoormi_str){
+          //console.log("yes are equal");
           this.playAnnotation(my_ann[i]);
           break;
         }
@@ -898,20 +905,28 @@ osm_call = async (lat, lng) => {
 
   //NEXT: passa alla prossima location in lista
   goNext = () => {
-    this.pause();
-    this.setState( prevState => ({
-      current_poi: prevState.current_poi + 1,
-      ready_to_listen: true
-    }));
+    if(this.state.current_poi < (this.state.markers.length - 1)){
+      this.pause();
+      this.setState( prevState => ({
+        current_poi: prevState.current_poi + 1,
+        ready_to_listen: true
+      }));
+    }
+    else
+      console.log("Non ci sono altre location");
   }
 
   //BACK: torna indietro di una location in lista
   goBack = () => {
-    this.pause();
-    this.setState( prevState => ({
-      current_poi: prevState.current_poi - 1,
-      ready_to_listen: true
-    }));
+    if(this.state.trip_started && (this.state.current_poi > 0)){
+      this.pause();
+      this.setState( prevState => ({
+        current_poi: prevState.current_poi - 1,
+        ready_to_listen: true
+      }));
+    }
+    else
+      console.log("Non ci sono location precedenti a questa");
   }
 
   //LATER: swap location this con location next
@@ -1012,18 +1027,22 @@ osm_call = async (lat, lng) => {
 
   onSwipeUp(gestureState) {
     console.log("Swipe up!");
+    this.goBack();
   }
 
   onSwipeDown(gestureState) {
     console.log("Swipe down!");
+    this.goNext();
   }
 
   onSwipeLeft(gestureState) {
     console.log("Swipe left!");
+    this.goPrev();
   }
 
   onSwipeRight(gestureState) {
     console.log("Swipe right!");
+    this.goMore();
   }
   
   render() {
