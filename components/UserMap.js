@@ -58,9 +58,6 @@ const UserMap = props => {
 			    strokeWidth={3}
         		strokeColor="hotpink"
         		mode="walking"
-        		optimizeWaypoints="true"
-        		onStart={(params) => {
-	            }}
 			/>
 		</MapView>
 	);

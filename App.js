@@ -9,6 +9,7 @@ import update from 'immutability-helper';
 import geolib from 'geolib';
 import YouTube, { YouTubeStandaloneIOS, YouTubeStandaloneAndroid } from 'react-native-youtube';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import HTML from 'react-native-render-html';
 //import geomock from './components/geomock';
 
 var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
@@ -26,6 +27,7 @@ export default class App extends Component<Props> {
     markers: [],
     showInfo: false,
     gestureName: null,
+    directions: "",
     text_to_read: "",
     ttsStatus: "initializing",
     selectedVoice: null,
@@ -392,7 +394,6 @@ export default class App extends Component<Props> {
           var durata = response[z].match(/([0-9]){1,4}s/); 
           if(durata == null){
             durata = await this.getYTDuration(video_list[i].id.videoId);
-            console.log("DUUUUURATA: "+ durata)
             let regex1 = /[0-9]{1,2}M/g;
             let regex2 = /[0-9]{1,2}S/g;
             let min = durata.match(regex1);
@@ -406,11 +407,11 @@ export default class App extends Component<Props> {
             let sec = durata.match(regex2);
             sec[0] = sec[0].substring(0, sec[0].length - 1); console.log("SECONDI: "+ sec[0]);
             sec[0] = parseFloat(sec[0]);
-            durata = [min[0] + sec[0]]; console.log("DURATA: "+ durata[0]);  
+            durata = [min[0] + sec[0]];  
             hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: 0, duration: durata[0] });
           }
           else {
-            durata[0] = durata[0].substring(0, durata[0].length - 1); console.log("durata aggiustata: "+ durata[0]);
+            durata[0] = durata[0].substring(0, durata[0].length - 1); 
             durata[0] = parseFloat(durata[0]);
             hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: start, duration: durata[0] });
             start = start + durata[0];
@@ -753,7 +754,7 @@ osm_call = async (lat, lng) => {
     }); 
   }
 
-  toggleClass = () => {
+  toggleClass = async () => {
     console.log("PREMUTO "+ this.state.buttonstatus);
 
     if(this.state.buttonstatus == "CERCA"){
@@ -764,7 +765,10 @@ osm_call = async (lat, lng) => {
       this.searchHoormiStrings(); //svolge tutti e tre i compiti
     }
     else if(this.state.buttonstatus == "START"){
+      let route = await this.getRoute();
       this.setState({
+        showInfo: true,
+        text_to_read: route,
         trip_started: true,
         ready_to_listen: true,
         buttonstatus: "GO"
@@ -994,6 +998,23 @@ osm_call = async (lat, lng) => {
     }); 
   }
 
+  getRoute = () => {
+    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.markers[this.state.current_poi].latitude +","+ this.state.markers[this.state.current_poi].longitude +"&language="+ this.state.user_language +"&mode=walking&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+    console.log(url);
+    return fetch(url, {
+      method: "GET",
+    })
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log(result);
+          return(result.routes[0].legs[0].steps[0].html_instructions);
+        })
+      .catch((error) => {
+        console.log(error);
+    }); 
+  }
+
   getdis = () => {
     //var alldistances = [];
     var max = -1;
@@ -1124,7 +1145,9 @@ osm_call = async (lat, lng) => {
                 }}
               />
               : 
-              <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) }} ><Text style={{}}>{this.state.text_to_read}</Text></ScrollView> 
+              <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) }}> 
+                <Text style={{}}>{this.state.text_to_read}</Text>
+              </ScrollView> 
             }
           </View>
           )}
