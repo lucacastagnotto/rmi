@@ -52,6 +52,9 @@ GeoMock is licensed under the MIT license.
       return clearInterval(id);
     };
     return navigator.geolocation.waypoints = [
+      //myLocation Via Zamboni 12: 
+      //latitude:  44,495135, 
+      //longitude: 11,347575
       {
         coords: {
           //Torre Asinelli

@@ -120,8 +120,8 @@
     this.setfollow(true); 
     myloc = getloc();
     this.mymap.animateToRegion({
-    latitude: myloc.latitude, longitude: myloc.longitude, 
-    latitudeDelta: 0.002, longitudeDelta: 0.005}, 1000); }}
+      latitude: myloc.latitude, longitude: myloc.longitude, 
+      latitudeDelta: 0.002, longitudeDelta: 0.005}, 1000); }}
 >
 </TouchableOpacity>
 </View>
