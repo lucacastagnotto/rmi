@@ -111,7 +111,7 @@ export default class App extends Component<Props> {
         let nextpoi = Object.assign({}, this.state.markers[this.state.current_poi])
         var distanza = this.getDistance(myloc, nextpoi); console.log("distanza: "+ distanza);
         //if(this.getDistance()<100){
-        if(distanza < 20){
+        if(distanza < 30){
           console.log("distance is ok");
           if(this.state.ready_to_listen){
             console.log("ready_to_listen is true");
@@ -1147,7 +1147,22 @@ osm_call = async (lat, lng) => {
     console.log("Swipe right!");
     this.goMore();
   }
-  
+
+  //onProgressAndroid
+  gettime = () => {
+    this.youTubeRef
+      .currentTime()
+      .then(currentTime => {
+        console.log("currentTime: "+ currentTime);
+        if(currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
+          this.pause();
+          this.setState({ currentTime: currentTime });
+          return(null);
+        }
+        setTimeout(this.gettime, 500);
+    })
+  }
+
   render() {
 
     return (
@@ -1201,13 +1216,17 @@ osm_call = async (lat, lng) => {
                       stopped: true,
                       buttonstatus: "GO"
                     })
+
                   }
                   else if(e.state == "playing"){
                     this.setState({
                       //isPlaying: true,
                       stopped: false,
                       buttonstatus: "STOP"
-                    })
+                    });
+                    if(Platform.OS === 'android'){
+                      this.gettime();
+                    }
                   }
                   if(this.state.seekto){
                     this.youTubeRef.seekTo(this.state.again.start);
@@ -1219,18 +1238,23 @@ osm_call = async (lat, lng) => {
                 onChangeQuality={e => this.setState({ quality: e.quality })}
                 onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
                 onProgress={e => {
-                  this.setState({ duration: e.duration, currentTime: e.currentTime }); 
-                  //console.log("current time: "+ e.currentTime);
-                  if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
-                    //console.log("devo fermarmi!");
-                    this.pause();
-                  }
+                  this.setState({ duration: e.duration, currentTime: e.currentTime }, function(e){
+                    if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
+                      this.pause();
+                    }}
+                  );
                 }}
               />
-              : 
-              <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)) }}> 
+              : this.state.listenToRoute ?
+              <ScrollView style={{ height: 120, backgroundColor: 'white', opacity: 0.8 }}>
+                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.markers[this.state.current_poi].title}</Text> 
                 <HTML html={this.state.text_to_read} baseFontStyle={{ fontSize: 20}} />
               </ScrollView> 
+              : 
+              <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)), backgroundColor: 'white', opacity: 0.8 }}>
+                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.markers[this.state.current_poi].title}</Text> 
+                <Text style={{fontSize: 20}} >{this.state.text_to_read}</Text>
+              </ScrollView>
             }
           </View>
           )}
