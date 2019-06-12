@@ -1174,7 +1174,7 @@ osm_call = async (lat, lng) => {
       >
 
         <View style={styles.menuBar}>
-          <TouchableOpacity style={{borderWidth: 2, marginLeft: 0, borderColor: 'green'}} onPress={this.printstate}><Text>MyButton</Text></TouchableOpacity>
+          <TouchableOpacity style={{borderWidth: 2, marginLeft: 0, borderColor: 'green'}} onPress={this.printstate}><Image source={require('.images/menu.png')}/></TouchableOpacity>
           <Text style={{color: 'black', marginLeft: 95, fontSize: 20}}>HOORMI</Text>
         </View>
 
