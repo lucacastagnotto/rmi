@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, TouchableOpacity, ScrollView, View, AsyncStorage, PixelRatio} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, ScrollView, View, AsyncStorage, PixelRatio, Image, FlatList} from 'react-native';
+import { ListItem, CheckBox } from 'react-native-elements'
 
 import UserMap from './components/UserMap';
 import Tts from 'react-native-tts';
@@ -25,6 +26,7 @@ export default class App extends Component<Props> {
   state = {
     myLocation: null,
     markers: [],
+    mypoi: [],
     showInfo: false,
     route: [],
     listenToRoute: false,
@@ -57,6 +59,7 @@ export default class App extends Component<Props> {
     yt_status: false, //toggleClass di YouTube
     seekto: false,
     followUserLocation: true,
+    list: false,
     buttonstatus: "CERCA" //toggleClass di Go/Stop
   }
 
@@ -110,7 +113,6 @@ export default class App extends Component<Props> {
         let myloc = Object.assign({}, this.state.myLocation);
         let nextpoi = Object.assign({}, this.state.markers[this.state.current_poi])
         var distanza = this.getDistance(myloc, nextpoi); console.log("distanza: "+ distanza);
-        //if(this.getDistance()<100){
         if(distanza < 30){
           console.log("distance is ok");
           if(this.state.ready_to_listen){
@@ -471,8 +473,10 @@ export default class App extends Component<Props> {
       console.log("order: "+ order);
       this.mergeMarkers(order);
       this.setState({
-        buttonstatus: "START"
+        buttonstatus: "START",
+        list: true
       });
+      //Genera FlatList
     } 
     else
       console.log("Non ci sono annotazioni nelle vicinanze");
@@ -530,7 +534,8 @@ export default class App extends Component<Props> {
         key: nextkey,
         what: [],
         why: [],
-        how: []
+        how: [],
+        onlist: false
       }
       nextkey++;
       //Ho stringa HooRMI, da cui trovo: Coordinate tramite searchPlusCodes, da cui trovo Titolo tramite osm_call(), da cui trovo Dbpedia tramite dbpedia()
@@ -823,7 +828,9 @@ osm_call = async (lat, lng) => {
     this.setState({ 
       buttonstatus: "CERCA",
       trip_started: false,
-      ready_to_listen: false
+      ready_to_listen: false,
+      showInfo: false,
+      list: false
     });
   }
 
@@ -1054,7 +1061,7 @@ osm_call = async (lat, lng) => {
     var waypoints = "";
     for(var i=0; i<this.state.markers.length; i++){
       if(i != index_max){
-      waypoints = waypoints.concat("|" + this.state.markers[i].latitude + "," + this.state.markers[i].longitude);
+        waypoints = waypoints.concat("|" + this.state.markers[i].latitude + "," + this.state.markers[i].longitude);
       }
     }
 
@@ -1174,12 +1181,14 @@ osm_call = async (lat, lng) => {
       >
 
         <View style={styles.menuBar}>
-          <TouchableOpacity style={{borderWidth: 2, marginLeft: 0, borderColor: 'green'}} onPress={this.printstate}><Image source={require('.images/menu.png')}/></TouchableOpacity>
+          <TouchableOpacity onPress={() => this.printstate()}>
+            <Image style={{marginLeft: 0}} source={require('./components/menu.png')} />
+          </TouchableOpacity>
           <Text style={{color: 'black', marginLeft: 95, fontSize: 20}}>HOORMI</Text>
         </View>
 
         <View style={styles.mapContainer}>
-          <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} />
+          <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} hideList={() => this.setState({list: false})} />
         </View>
 
         { this.state.showInfo && (
@@ -1238,11 +1247,11 @@ osm_call = async (lat, lng) => {
                 onChangeQuality={e => this.setState({ quality: e.quality })}
                 onChangeFullscreen={e => this.setState({ fullscreen: e.isFullscreen })}
                 onProgress={e => {
-                  this.setState({ duration: e.duration, currentTime: e.currentTime }, function(e){
-                    if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
-                      this.pause();
-                    }}
-                  );
+                  this.setState({ duration: e.duration, currentTime: e.currentTime }); 
+                  //console.log("current time: "+ e.currentTime);
+                  if(e.currentTime >= (this.state.again.duration + this.state.again.start - 0.500)){
+                    this.pause();
+                  }
                 }}
               />
               : this.state.listenToRoute ?
@@ -1259,7 +1268,7 @@ osm_call = async (lat, lng) => {
           </View>
           )}
 
-        
+          {!this.state.list && (
           <GestureRecognizer
             onSwipeUp={(state) => this.onSwipeUp(state)}
             onSwipeDown={(state) => this.onSwipeDown(state)}
@@ -1275,7 +1284,32 @@ osm_call = async (lat, lng) => {
               <Text style={{color: 'white', fontSize: 10}}>{this.state.buttonstatus}</Text>
             </TouchableOpacity>
           </GestureRecognizer>
-        
+          )}
+
+          {this.state.list && (
+            <FlatList
+              data={this.state.markers}
+              renderItem={({item, index}) =>  (
+                <ListItem
+                  leftAvatar={{source: {uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Bologna-SanPetronioPiazzaMaggiore1.jpg/1504px-Bologna-SanPetronioPiazzaMaggiore1.jpg"} }}
+                  title={item.title}
+                  subtitle={"Dis: "+ ((this.getDistance(this.state.myLocation, item)/1000).toFixed(2)) + " km"}
+                  rightSubtitle={"WHY: "+ item.why.length}
+                  checkBox={{checked: item.onlist, onPress:() => {
+                    var nwmark = update(this.state.markers, {
+                      [index]: {onlist: {$set: !this.state.markers[index].onlist}}
+                    });
+                    this.setState({
+                      markers: nwmark
+                    });
+                  } }}
+                  containerStyle={{ borderBottomWidth: 1, borderColor: 'grey'}}
+                />
+              )}
+              keyExtractor={item => item.title}
+              style={{position: 'absolute', height: '40%', width: '100%', bottom: 0}}
+            />
+          )}
 
       </View>
     );
@@ -1289,7 +1323,7 @@ const styles = StyleSheet.create({
     //justifyContent: 'center',
   },
   menuBar: {
-    height: 70,
+    height: 60,
     width: '100%',
     borderWidth: 5,
     borderColor: 'red',
@@ -1366,4 +1400,5 @@ const styles = StyleSheet.create({
 
 /*
   PixelRatio.getPixelSizeForLayoutSize()
+  <TouchableOpacity style={{borderWidth: 2, marginLeft: 0, borderColor: 'green'}} onPress={this.printstate}><Image source={require('./images/menu.png')} /></TouchableOpacity>
 */

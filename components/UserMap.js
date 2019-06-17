@@ -33,6 +33,7 @@ const UserMap = props => {
 			provider={ PROVIDER_GOOGLE }
 			initialRegion={props.myLocation}
 			showsUserLocation={true}
+			onPress={props.hideList}
 			//initialRegion={{latitude: 44.494623, longitude: 11.346900, latitudeDelta: 0.002, longitudeDelta: 0.005}}
 			followUserLocation={props.follow}
 			//EVENTI
