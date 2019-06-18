@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, TouchableOpacity, ScrollView, View, AsyncStorage, PixelRatio, Image, FlatList} from 'react-native';
-import { ListItem, CheckBox } from 'react-native-elements'
+import { ListItem, CheckBox, Overlay } from 'react-native-elements'
 
 import UserMap from './components/UserMap';
 import Tts from 'react-native-tts';
@@ -60,7 +60,9 @@ export default class App extends Component<Props> {
     seekto: false,
     followUserLocation: true,
     list: false,
-    buttonstatus: "CERCA" //toggleClass di Go/Stop
+    showSM: false,
+    isVisible: false,
+    buttonstatus: "FIND" //toggleClass di Go/Stop
   }
 
   options = {
@@ -111,7 +113,7 @@ export default class App extends Component<Props> {
       }));
       if(this.state.trip_started){
         let myloc = Object.assign({}, this.state.myLocation);
-        let nextpoi = Object.assign({}, this.state.markers[this.state.current_poi])
+        let nextpoi = Object.assign({}, this.state.mypoi[this.state.current_poi])
         var distanza = this.getDistance(myloc, nextpoi); console.log("distanza: "+ distanza);
         if(distanza < 30){
           console.log("distance is ok");
@@ -123,7 +125,7 @@ export default class App extends Component<Props> {
               route: [],
               index_route: 0
             });
-            let myann = Object.assign({}, this.state.markers[this.state.current_poi].why[0]);
+            let myann = Object.assign({}, this.state.mypoi[this.state.current_poi].why[0]);
             this.playAnnotation(myann);
           }
         }
@@ -468,7 +470,8 @@ export default class App extends Component<Props> {
       //promise = await this.initMarkersWithAnnotations("8FPHF8VV+57:why:ita:his-art", "video", "DCBRsxLCV40", "why");
       promise = await this.initMarkersWithAnnotations(hoormi_str[i].str, "video", hoormi_str[i].video_id, hoormi_str[i].type, hoormi_str[i].start, hoormi_str[i].duration);
     }
-    if(this.state.markers.length > 0){
+    return(this.state.markers.length);
+    /*if(this.state.markers.length > 0){
       var order = await this.getDirections(); 
       console.log("order: "+ order);
       this.mergeMarkers(order);
@@ -479,7 +482,7 @@ export default class App extends Component<Props> {
       //Genera FlatList
     } 
     else
-      console.log("Non ci sono annotazioni nelle vicinanze");
+      console.log("Non ci sono annotazioni nelle vicinanze");*/
   }
 
   mergeMarkers = (order) => {
@@ -487,7 +490,7 @@ export default class App extends Component<Props> {
     //rimuovo destination e copio markers
     //ordino markers
     //markers.push destination 
-    var ordered_markers = update(this.state.markers, {
+    var ordered_markers = update(this.state.mypoi, {
       $splice: [[[idx], 1]]
     }); 
 
@@ -496,9 +499,9 @@ export default class App extends Component<Props> {
     for(var i=0; i<order.length-1; i++){
       ordinato.push(ordered_markers[order[i]]);
     }
-    ordinato.push(this.state.markers[idx]);
+    ordinato.push(this.state.mypoi[idx]);
     this.setState({
-      markers: ordinato
+      mypoi: ordinato
     });
 
   }
@@ -792,12 +795,21 @@ osm_call = async (lat, lng) => {
   toggleClass = async () => {
     console.log("PREMUTO "+ this.state.buttonstatus);
 
-    if(this.state.buttonstatus == "CERCA"){
+    if(this.state.buttonstatus == "FIND"){
       console.log("STO CERCANDO!");
       //cercare annotations
       //ordinare annotations
       //aggiornare buttonstatus
-      this.searchHoormiStrings(); //svolge tutti e tre i compiti
+      var results = await this.searchHoormiStrings(); 
+      if(results > 0){
+        this.setState({
+          buttonstatus: "START",
+          list: true
+        });
+        //Genera FlatList
+      } 
+      else
+        console.log("Non ci sono annotazioni nelle vicinanze")
     }
     else if(this.state.buttonstatus == "START"){
       var route = await this.getRoute();
@@ -826,7 +838,7 @@ osm_call = async (lat, lng) => {
   longPress = () => {
     console.log("onlongpress");
     this.setState({ 
-      buttonstatus: "CERCA",
+      buttonstatus: "FIND",
       trip_started: false,
       ready_to_listen: false,
       showInfo: false,
@@ -865,7 +877,7 @@ osm_call = async (lat, lng) => {
       if(my_ann.hoormi_str != null){
         let tipo = my_ann.hoormi_str.match(/(why|how|what){1}?/);
         typoo = tipo[0];
-        var ann_array = this.state.markers[this.state.current_poi][typoo];
+        var ann_array = this.state.mypoi[this.state.current_poi][typoo];
         for(var i=0; i<ann_array.length; i++){
           if(my_ann.hoormi_str == ann_array[i].hoormi_str){
             index = i;
@@ -879,11 +891,11 @@ osm_call = async (lat, lng) => {
         lastTypeAnn: typoo,
         buttonstatus: "STOP"
       });
-      var updated_markers = update(this.state.markers, {
+      var updated_markers = update(this.state.mypoi, {
         [this.state.current_poi]: {[typoo]: {[index]: {visited: {$set: true}}}}
       });
       this.setState({
-        markers: updated_markers
+        mypoi: updated_markers
       });
     }
     else
@@ -896,7 +908,7 @@ osm_call = async (lat, lng) => {
 
   //MORE: riproduce il soundbite successivo dello stesso tipo dell'ultimo riprodotto
   goMore = () => {
-    var my_ann = this.state.markers[this.state.current_poi];
+    var my_ann = this.state.mypoi[this.state.current_poi];
     if(my_ann == (undefined || null))
       console.log("Non hai ancora scelto una location");
     else if(my_ann[this.state.lastTypeAnn] != (undefined || null)){
@@ -919,7 +931,7 @@ osm_call = async (lat, lng) => {
 
   //PREV: riproduce il soundbite precedente all'ultimo riprodotto
   goPrev = () => {
-    var my_ann = this.state.markers[this.state.current_poi];
+    var my_ann = this.state.mypoi[this.state.current_poi];
     if(my_ann == (undefined || null)){
       console.log("Errore: non hai ancora scelto una location valida");
       return(null);
@@ -950,7 +962,7 @@ osm_call = async (lat, lng) => {
 
   //NEXT: passa alla prossima location in lista
   goNext = async () => {
-    if(this.state.current_poi < (this.state.markers.length - 1)){
+    if(this.state.current_poi < (this.state.mypoi.length - 1)){
       this.pause();
       this.setState( prevState => ({
         current_poi: prevState.current_poi + 1,
@@ -1008,18 +1020,18 @@ osm_call = async (lat, lng) => {
 
   //LATER: swap location this con location next
   goLater = async () => {
-    if(this.state.current_poi < this.state.markers.length - 1){
+    if(this.state.current_poi < this.state.mypoi.length - 1){
       await this.pause();
-      var swap = Object.assign({}, this.state.markers[this.state.current_poi]);
+      var swap = Object.assign({}, this.state.mypoi[this.state.current_poi]);
       var new_order = update( 
-        update(this.state.markers, {
+        update(this.state.mypoi, {
           $splice: [[[this.state.current_poi], 1]]
         }), {
           $splice: [[[this.state.current_poi + 1], 0, swap]]
         }
       );
       this.setState({
-        markers: new_order,
+        mypoi: new_order,
         ready_to_listen: true,
       }, async function(){
             var route = await this.getRoute();
@@ -1059,13 +1071,17 @@ osm_call = async (lat, lng) => {
   getDirections = () => {
     var index_max = this.getdis();
     var waypoints = "";
-    for(var i=0; i<this.state.markers.length; i++){
-      if(i != index_max){
-        waypoints = waypoints.concat("|" + this.state.markers[i].latitude + "," + this.state.markers[i].longitude);
+    var url = "";
+    if(this.state.mypoi.length==1)
+      url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.mypoi[index_max].latitude +","+ this.state.mypoi[index_max].longitude +"&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0"; 
+    else {
+      for(var i=0; i<this.state.mypoi.length; i++){
+        if(i != index_max){
+          waypoints = waypoints.concat("|" + this.state.mypoi[i].latitude + "," + this.state.mypoi[i].longitude);
+        }
       }
+      url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.mypoi[index_max].latitude +","+ this.state.mypoi[index_max].longitude +"&waypoints=optimize:true"+ waypoints +"&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
     }
-
-    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.markers[index_max].latitude +","+ this.state.markers[index_max].longitude +"&waypoints=optimize:true"+ waypoints +"&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
     console.log(url);
     return fetch(url, {
       method: "GET",
@@ -1084,8 +1100,8 @@ osm_call = async (lat, lng) => {
   }
 
   getRoute = () => {
-    console.log("destinazione: "+ this.state.markers[this.state.current_poi].latitude +","+ this.state.markers[this.state.current_poi].longitude);
-    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.markers[this.state.current_poi].latitude +","+ this.state.markers[this.state.current_poi].longitude +"&language="+ this.state.user_language +"&mode=walking&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+    console.log("destinazione: "+ this.state.mypoi[this.state.current_poi].latitude +","+ this.state.mypoi[this.state.current_poi].longitude);
+    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.mypoi[this.state.current_poi].latitude +","+ this.state.mypoi[this.state.current_poi].longitude +"&language="+ this.state.user_language +"&mode=walking&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
     console.log(url);
     return fetch(url, {
       method: "GET",
@@ -1109,8 +1125,8 @@ osm_call = async (lat, lng) => {
     var max = -1;
     var index_max = -1;
     var origin = Object.assign({}, this.state.myLocation);
-    for(var i=0; i<this.state.markers.length; i++){
-      let destination = Object.assign({}, this.state.markers[i]);
+    for(var i=0; i<this.state.mypoi.length; i++){
+      let destination = Object.assign({}, this.state.mypoi[i]);
       let distance = this.getDistance(origin, destination);
       if(max<distance){
         max = distance;
@@ -1118,12 +1134,12 @@ osm_call = async (lat, lng) => {
       }
       //alldistances.push({ myobj: destination, distance: distance});
     }
-    console.log("destination: "+ this.state.markers[index_max].title);
+    console.log("destination: "+ this.state.mypoi[index_max].title);
     return(index_max);
   }
 
   getNumber = (type) => {
-    var myann = this.state.markers[this.state.current_poi];
+    var myann = this.state.mypoi[this.state.current_poi];
     if(myann == (null || undefined)){
       return("");
     }
@@ -1181,15 +1197,47 @@ osm_call = async (lat, lng) => {
       >
 
         <View style={styles.menuBar}>
-          <TouchableOpacity onPress={() => this.printstate()}>
+          <TouchableOpacity onPress={() => {this.printstate(); this.setState({showSM: !this.state.showSM})}}>
             <Image style={{marginLeft: 0}} source={require('./components/menu.png')} />
           </TouchableOpacity>
           <Text style={{color: 'black', marginLeft: 95, fontSize: 20}}>HOORMI</Text>
         </View>
 
         <View style={styles.mapContainer}>
-          <UserMap myLocation={this.state.myLocation} poi={this.state.markers} follow={this.state.followUserLocation} changefollow={this.changefollow} hideList={() => this.setState({list: false})} />
+          <UserMap 
+            myLocation={this.state.myLocation} 
+            poi={this.state.mypoi} 
+            follow={this.state.followUserLocation} 
+            changefollow={this.changefollow} 
+            hideList={ async () => {
+              if(this.state.list){
+                var order = await this.getDirections(); 
+                this.mergeMarkers(order);
+                this.setState({list: false});
+              }
+            }} />
         </View>
+
+        { this.state.showSM && (
+          <View style={styles.sidemenu}>
+            <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
+              <Text style={styles.textSM}>Language</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.printstate}>
+              <Text style={styles.textSM}>List of POI</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <Overlay 
+          isVisible={this.state.isVisible}
+          overlayBackgroundColor='white'
+          height='40%'
+          width='60%'
+          onBackdropPress={() => this.setState({ isVisible: false })}
+        >
+          <Text>Ita</Text>
+        </Overlay>
 
         { this.state.showInfo && (
           <View style={styles.ytc}>
@@ -1256,12 +1304,12 @@ osm_call = async (lat, lng) => {
               />
               : this.state.listenToRoute ?
               <ScrollView style={{ height: 120, backgroundColor: 'white', opacity: 0.8 }}>
-                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.markers[this.state.current_poi].title}</Text> 
+                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.mypoi[this.state.current_poi].title}</Text> 
                 <HTML html={this.state.text_to_read} baseFontStyle={{ fontSize: 20}} />
               </ScrollView> 
               : 
               <ScrollView style={{ height: PixelRatio.roundToNearestPixel(this.state.containerWidth / (16 / 9)), backgroundColor: 'white', opacity: 0.8 }}>
-                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.markers[this.state.current_poi].title}</Text> 
+                <Text style={{fontSize: 30, alignSelf: 'center', fontWeight: 'bold', backgroundColor: 'white'}}>{this.state.mypoi[this.state.current_poi].title}</Text> 
                 <Text style={{fontSize: 20}} >{this.state.text_to_read}</Text>
               </ScrollView>
             }
@@ -1276,7 +1324,7 @@ osm_call = async (lat, lng) => {
             onSwipeRight={(state) => this.onSwipeRight(state)}
             style={styles.controls}
           >
-          <TouchableOpacity 
+            <TouchableOpacity 
               title="Go/Stop"
               onPress={this.toggleClass}
               onLongPress={this.longPress}
@@ -1296,6 +1344,21 @@ osm_call = async (lat, lng) => {
                   subtitle={"Dis: "+ ((this.getDistance(this.state.myLocation, item)/1000).toFixed(2)) + " km"}
                   rightSubtitle={"WHY: "+ item.why.length}
                   checkBox={{checked: item.onlist, onPress:() => {
+                    if(!item.onlist){
+                      var nwpoi = update(this.state.mypoi, {
+                        $push: [this.state.markers[index]]
+                      })
+                    }
+                    else {
+                      //trova indice corrispondente di mypoi
+                      var pos = this.state.mypoi.findIndex(e => e.id === this.state.markers[index].id)
+                      var nwpoi = update(this.state.mypoi, {
+                        $splice: [[[pos], 1]]
+                      })
+                    }
+                    this.setState({
+                      mypoi: nwpoi
+                    });
                     var nwmark = update(this.state.markers, {
                       [index]: {onlist: {$set: !this.state.markers[index].onlist}}
                     });
@@ -1325,6 +1388,7 @@ const styles = StyleSheet.create({
   menuBar: {
     height: 60,
     width: '100%',
+    top: 0,
     borderWidth: 5,
     borderColor: 'red',
     backgroundColor: 'white',
@@ -1334,6 +1398,26 @@ const styles = StyleSheet.create({
   mapContainer: {
     flex: 1,
     width: '100%'
+  },
+  sidemenu: {
+    position: 'absolute',
+    flex: 1,
+    top: 0,
+    marginTop: 60,
+    alignSelf: 'flex-start',
+    borderWidth: 2,
+    borderRightColor: 'blue',
+    height: '40%',
+    width: '55%',
+    backgroundColor: 'white',
+    flexDirection: 'column'
+  },
+  textSM: {
+    fontSize: 20, 
+    marginTop: 15,
+    marginLeft: 10, 
+    fontWeight: 'bold',
+
   },
   controls: {
     position: 'absolute',
