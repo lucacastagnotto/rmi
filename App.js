@@ -1138,18 +1138,16 @@ osm_call = async (lat, lng) => {
     return(index_max);
   }
 
+/*
   getNumber = (type) => {
-    var myann = this.state.mypoi[this.state.current_poi];
-    if(myann == (null || undefined)){
+    if(this.state.mypoi.length <= 0){
       return("");
     }
-    else if(myann[type] == (null || undefined)){
-      return(0);
+    else {
+      var myann = this.state.mypoi[this.state.current_poi];
+      return(myann[type].length)
     }
-    else{
-      return(myann[type].length);
-    }
-  }
+  }*/
 
   onSwipeUp(gestureState) {
     console.log("Swipe up!");
@@ -1223,7 +1221,7 @@ osm_call = async (lat, lng) => {
             <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
               <Text style={styles.textSM}>Language</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.printstate}>
+            <TouchableOpacity onPress={() => this.setState({ list: true, showSM: false })}>
               <Text style={styles.textSM}>List of POI</Text>
             </TouchableOpacity>
           </View>
@@ -1324,6 +1322,15 @@ osm_call = async (lat, lng) => {
             onSwipeRight={(state) => this.onSwipeRight(state)}
             style={styles.controls}
           >
+            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+              <TouchableOpacity onPress={() => this.playAgain()} >
+                <Image source={require('./components/again24.png')} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.goLater()} >
+                <Image source={require('./components/later24.png')} />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity 
               title="Go/Stop"
               onPress={this.toggleClass}
@@ -1331,6 +1338,18 @@ osm_call = async (lat, lng) => {
               style={styles.centralButton}>
               <Text style={{color: 'white', fontSize: 10}}>{this.state.buttonstatus}</Text>
             </TouchableOpacity>
+
+            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
+              <TouchableOpacity style={styles.wbuttons} onPress={}>
+                <Text style={styles.wtext}>WHAT: {this.state.mypoi[this.state.current_poi].what.length}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.wbuttons}>
+                <Text style={styles.wtext}>WHY: {this.state.mypoi[this.state.current_poi].why.length}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.wbuttons}>
+                <Text style={styles.wtext}>HOW: {this.state.mypoi[this.state.current_poi].how.length}</Text>
+              </TouchableOpacity>
+            </View>
           </GestureRecognizer>
           )}
 
@@ -1421,16 +1440,16 @@ const styles = StyleSheet.create({
   },
   controls: {
     position: 'absolute',
-    flex: 1,
-    bottom: 0,
-    justifyContent: 'center',
+    flex: 0,
+    flexDirection: 'column',
     alignSelf: 'center',
-    borderWidth: 2,
-    borderColor: 'blue',
     height: 150,
     width: '80%',
-    //opacity: 0.2,
-    marginBottom: 60
+    bottom: 0,
+    marginBottom: 60,
+    borderWidth: 2,
+    borderColor: 'blue'
+    //opacity: 0.2, 
   },
   centralButton: {    
     justifyContent: 'center',
@@ -1440,6 +1459,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 50,
     height: 50
+  },
+  wbuttons: {
+    margin: 5
+  },
+  wtext: {
+    fontSize: 5
   },
   ytc: {
     position: 'absolute',
