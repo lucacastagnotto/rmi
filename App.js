@@ -125,7 +125,7 @@ export default class App extends Component<Props> {
               route: [],
               index_route: 0
             });
-            let myann = Object.assign({}, this.state.mypoi[this.state.current_poi].why[0]);
+            let myann = Object.assign({}, this.state.mypoi[this.state.current_poi].what[0]);
             this.playAnnotation(myann);
           }
         }
@@ -449,7 +449,7 @@ export default class App extends Component<Props> {
           else {
             durata[0] = durata[0].substring(0, durata[0].length - 1); 
             durata[0] = parseFloat(durata[0]);
-            hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: start, duration: durata[0] });
+            hoormi_str.push({ str: response[z], type: type_of_ann[0], video_id: video_list[i].id.videoId, start: start, duration: durata[0] }); 
             start = start + durata[0];
           }
         }
@@ -467,7 +467,6 @@ export default class App extends Component<Props> {
     //initMarker
     var promise;
     for(i=0; i<hoormi_str.length; i++){
-      //promise = await this.initMarkersWithAnnotations("8FPHF8VV+57:why:ita:his-art", "video", "DCBRsxLCV40", "why");
       promise = await this.initMarkersWithAnnotations(hoormi_str[i].str, "video", hoormi_str[i].video_id, hoormi_str[i].type, hoormi_str[i].start, hoormi_str[i].duration);
     }
     return(this.state.markers.length);
@@ -506,7 +505,7 @@ export default class App extends Component<Props> {
 
   }
 
-  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation, start, duration) => {
+  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation, start, duration) => { console.log("init: "+ rmistring +","+ type_of_file+","+type_of_annotation+","+start+","+duration);
 
     var trovato = false;
     var i = 0;
@@ -545,18 +544,20 @@ export default class App extends Component<Props> {
       var coords = await this.searchPlusCodes(rmistring.substring(0,11)); //ritorna l'oggetto json
       newmark.latitude = coords.plus_code.geometry.location.lat;
       newmark.longitude = coords.plus_code.geometry.location.lng;
-      newmark.title = await this.osm_call(newmark.latitude, newmark.longitude);
+      var nome = await this.osm_call(newmark.latitude, newmark.longitude);
+      newmark.title = nome;
+      newmark.what.push({type_of_file: "text", value: nome, hoormi_str: null, visited: false})
       console.log("check before dbpedia");
-      var dbpedia_value = await this.dbpedia(newmark.title);
+      var dbpedia_value = undefined;//await this.dbpedia(newmark.title);
       if(dbpedia_value != undefined) {
-        newmark.why.push({type_of_file: "text", value: dbpedia_value, hoormi_str: null, visited: false});
+        newmark.why.push({type_of_file: "text", value: dbpedia_value, hoormi_str: "why", visited: false});
       }
       else {
         var check_title = await this.wiki(newmark.title);
         if(check_title != newmark.title) {
-          let promise = await this.dbpedia(check_title);
+          let promise = undefined//await this.dbpedia(check_title);
           if(promise != undefined) {
-            newmark.why.push({type_of_file: "text", value: promise, hoormi_str: null, visited: false});
+            newmark.why.push({type_of_file: "text", value: promise, hoormi_str: "why", visited: false});
           }
         }
       }
@@ -872,7 +873,8 @@ osm_call = async (lat, lng) => {
           seekto: true
         });
       }
-      var typoo = "why"; //faccio questo perché le annotazioni dbpedia hanno 'null' nel campo hoormi_str e in quel caso sono di tipo 'why'
+      //aggiorna variabili di stato
+      var typoo = "what"; 
       var index = 0;
       if(my_ann.hoormi_str != null){
         let tipo = my_ann.hoormi_str.match(/(why|how|what){1}?/);
@@ -885,7 +887,6 @@ osm_call = async (lat, lng) => {
           }
         }
       }
-      
       this.setState({
         stopped: false,
         lastTypeAnn: typoo,
@@ -909,21 +910,25 @@ osm_call = async (lat, lng) => {
   //MORE: riproduce il soundbite successivo dello stesso tipo dell'ultimo riprodotto
   goMore = () => {
     var my_ann = this.state.mypoi[this.state.current_poi];
-    if(my_ann == (undefined || null))
+    if(my_ann == (undefined || null)){
       console.log("Non hai ancora scelto una location");
-    else if(my_ann[this.state.lastTypeAnn] != (undefined || null)){
+      return(null);
+    }
+    if((my_ann[this.state.lastTypeAnn] == (undefined || null)) || (my_ann[this.state.lastTypeAnn].length <= 0))
+      console.log("Non ci sono annotazioni di questo tipo");
+    else {
       my_ann = my_ann[this.state.lastTypeAnn];
+      console.log("length: "+ my_ann.length);
       var i = 0;
-      while(i<my_ann.length){
-        if(my_ann[i].visited){ //bisogna resettare a 'visited: false' quando si cambia tipo di soundbite o location
-          i++;
-        }
-        else{
-          this.playAnnotation(my_ann[i]);
+      while(i<my_ann.length - 1){
+        if(my_ann[i].hoormi_str === this.state.again.hoormi_str){
+          this.playAnnotation(my_ann[i+1]);
           break;
         }
+        else
+          i++;
       }
-      if(i>=my_ann.length){
+      if(i>=my_ann.length - 1){
         console.log("Non ci sono altri soundbite da riprodurre");
       }
     }
@@ -936,16 +941,18 @@ osm_call = async (lat, lng) => {
       console.log("Errore: non hai ancora scelto una location valida");
       return(null);
     }
-    if(my_ann[this.state.lastTypeAnn] == (undefined || null))
+    console.log(my_ann[this.state.lastTypeAnn])
+    if((my_ann[this.state.lastTypeAnn] == (undefined || null)) || (my_ann[this.state.lastTypeAnn].length <= 0))
       console.log("Errore: non ci sono annotazioni");
     else if(this.state.again.hoormi_str == my_ann[this.state.lastTypeAnn][0].hoormi_str)
         console.log("Can't go backwards more");  
     else{
+      console.log("length: "+ my_ann[this.state.lastTypeAnn].length);
       var i = 0;
-      while(i<my_ann.length - 1){
+      while(i<my_ann[this.state.lastTypeAnn].length - 1){
         if(my_ann[this.state.lastTypeAnn][i+1].hoormi_str === this.state.again.hoormi_str){
           //console.log("yes are equal");
-          this.playAnnotation(my_ann[i]);
+          this.playAnnotation(my_ann[this.state.lastTypeAnn][i]);
           break;
         }
         else
@@ -1138,16 +1145,18 @@ osm_call = async (lat, lng) => {
     return(index_max);
   }
 
-/*
+
   getNumber = (type) => {
-    if(this.state.mypoi.length <= 0){
+    if((this.state.mypoi == (null || undefined)) || (this.state.mypoi.length == 0)) {
       return("");
     }
-    else {
-      var myann = this.state.mypoi[this.state.current_poi];
-      return(myann[type].length)
+    var myann = this.state.mypoi[this.state.current_poi];
+    if((myann[type] == (null || undefined)) || (myann[type].length == 0)){
+      return("0");
     }
-  }*/
+    else
+      return(myann[type].length)
+  }
 
   onSwipeUp(gestureState) {
     console.log("Swipe up!");
@@ -1183,6 +1192,26 @@ osm_call = async (lat, lng) => {
         setTimeout(this.gettime, 500);
     })
   }
+
+  /* //doesn't work
+  set_visited_false = (nwpoi, type, count) => {
+    if(count < this.state.mypoi[this.state.current_poi][type].length){
+      nwpoi = update(this.state.mypoi, {
+        [this.state.current_poi]: {[type]: {[count]: {visited: {$set: false}}}}
+      });
+      console.log("count: "+ count + "nwpoi: "+ nwpoi[this.state.current_poi][type][count].visited);
+      this.set_visited_false(nwpoi, type, count+1);
+    }
+    else {
+      for(var i=0; i<this.state.mypoi[this.state.current_poi][type].length; i++){
+        console.log("count: "+ i + " nwpoi: "+ nwpoi[this.state.current_poi][type][i].visited);
+      }
+      this.setState({
+        mypoi: nwpoi
+      });
+      console.log("updato ");
+    }
+  }*/
 
   render() {
 
@@ -1223,6 +1252,9 @@ osm_call = async (lat, lng) => {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.setState({ list: true, showSM: false })}>
               <Text style={styles.textSM}>List of POI</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.printstate}>
+              <Text style={styles.textSM}>printstate</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -1340,14 +1372,40 @@ osm_call = async (lat, lng) => {
             </TouchableOpacity>
 
             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
-              <TouchableOpacity style={styles.wbuttons} onPress={}>
-                <Text style={styles.wtext}>WHAT: {this.state.mypoi[this.state.current_poi].what.length}</Text>
+              <TouchableOpacity 
+              style={styles.wbuttons} 
+              onPress={() => {
+                if(this.state.mypoi[this.state.current_poi] != (null || undefined))
+                  this.playAnnotation(this.state.mypoi[this.state.current_poi].what[0])
+              }}
+              >
+                <Text style={styles.wtext}>WHAT</Text>
+                <Text style={styles.wtext}>{this.getNumber("what")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.wbuttons}>
-                <Text style={styles.wtext}>WHY: {this.state.mypoi[this.state.current_poi].why.length}</Text>
+              <TouchableOpacity 
+              style={styles.wbuttons} 
+              onPress={() => {
+                if(this.state.mypoi[this.state.current_poi] != (null || undefined)){/* //rimetti a visited: false le annotazioni di altro tipo
+                  if((this.state.mypoi[this.state.current_poi].what != (null || undefined)) && (this.state.mypoi[this.state.current_poi].what.length > 0)){
+                    var nwpoi;
+                    this.set_visited_false(nwpoi, "what", 0);
+                  }*/
+                  this.playAnnotation(this.state.mypoi[this.state.current_poi].why[0]);
+                }
+              }}
+              >
+                <Text style={styles.wtext}>WHY</Text>
+                <Text style={styles.wtext}>{this.getNumber("why")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.wbuttons}>
-                <Text style={styles.wtext}>HOW: {this.state.mypoi[this.state.current_poi].how.length}</Text>
+              <TouchableOpacity 
+              style={styles.wbuttons}
+              onPress={() => {
+                if(this.state.mypoi[this.state.current_poi] != (null || undefined))
+                  this.playAnnotation(this.state.mypoi[this.state.current_poi].how[0])
+              }}
+              >
+                <Text style={styles.wtext}>HOW</Text>
+                <Text style={styles.wtext}>{this.getNumber("how")}</Text>
               </TouchableOpacity>
             </View>
           </GestureRecognizer>
@@ -1363,27 +1421,28 @@ osm_call = async (lat, lng) => {
                   subtitle={"Dis: "+ ((this.getDistance(this.state.myLocation, item)/1000).toFixed(2)) + " km"}
                   rightSubtitle={"WHY: "+ item.why.length}
                   checkBox={{checked: item.onlist, onPress:() => {
-                    if(!item.onlist){
-                      var nwpoi = update(this.state.mypoi, {
-                        $push: [this.state.markers[index]]
-                      })
-                    }
-                    else {
-                      //trova indice corrispondente di mypoi
-                      var pos = this.state.mypoi.findIndex(e => e.id === this.state.markers[index].id)
-                      var nwpoi = update(this.state.mypoi, {
-                        $splice: [[[pos], 1]]
-                      })
-                    }
-                    this.setState({
-                      mypoi: nwpoi
-                    });
                     var nwmark = update(this.state.markers, {
                       [index]: {onlist: {$set: !this.state.markers[index].onlist}}
                     });
                     this.setState({
                       markers: nwmark
-                    });
+                    }, function(){
+                      if(!item.onlist){
+                        var nwpoi = update(this.state.mypoi, {
+                          $push: [this.state.markers[index]]
+                        })
+                      }
+                      else {
+                        //trova indice corrispondente di mypoi
+                        var pos = this.state.mypoi.findIndex(e => e.id === this.state.markers[index].id)
+                        var nwpoi = update(this.state.mypoi, {
+                          $splice: [[[pos], 1]]
+                        })
+                      }
+                      this.setState({
+                        mypoi: nwpoi
+                      });
+                    }); 
                   } }}
                   containerStyle={{ borderBottomWidth: 1, borderColor: 'grey'}}
                 />
@@ -1429,14 +1488,14 @@ const styles = StyleSheet.create({
     height: '40%',
     width: '55%',
     backgroundColor: 'white',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 2
   },
   textSM: {
     fontSize: 20, 
     marginTop: 15,
     marginLeft: 10, 
-    fontWeight: 'bold',
-
+    fontWeight: 'bold'
   },
   controls: {
     position: 'absolute',
@@ -1461,10 +1520,13 @@ const styles = StyleSheet.create({
     height: 50
   },
   wbuttons: {
-    margin: 5
+    margin: 5,
+    borderColor: 'blue',
+    borderWidth: 1,
+    backgroundColor: 'lightblue'
   },
   wtext: {
-    fontSize: 5
+    fontSize: 10
   },
   ytc: {
     position: 'absolute',
