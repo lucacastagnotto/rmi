@@ -164,13 +164,23 @@ export default class App extends Component<Props> {
 
   printstate = () => {
     console.log(this.state);
+    this.displayData();
   }
 
-  saveData = () => {
+  saveData = async (iso1, iso2, ietf, key) => {
     let preferences = {
-      lang: "en"
+      lang: {
+        iso1: iso1,
+        iso2: iso2,
+        ietf: ietf,
+        key: key
+      }
     }
-    AsyncStorage.setItem('user', JSON.stringify(preferences));
+    try {
+      await AsyncStorage.setItem('user', JSON.stringify(preferences));
+    } catch(err){
+      console.log("Error Saving Data: "+ err);
+    }
   }
 
   displayData = async () => {
@@ -505,7 +515,7 @@ export default class App extends Component<Props> {
 
   }
 
-  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation, start, duration) => { console.log("init: "+ rmistring +","+ type_of_file+","+type_of_annotation+","+start+","+duration);
+  initMarkersWithAnnotations = async (rmistring, type_of_file, content, type_of_annotation, start, duration) => { 
 
     var trovato = false;
     var i = 0;
@@ -677,15 +687,13 @@ export default class App extends Component<Props> {
   initUserPreferences = async () => {
     var user = await this.getUserKey();
     if( user == null ){
-      user = {
-        lang: "en"
-      }
+      await this.saveData("en", "eng", "en-US", 0);
+      user = await this.getUserKey();
     }
-    else
-      user = JSON.parse(user);
+    user = JSON.parse(user);
     this.setState({
       user_language: user.lang
-    })
+    });
   }
 
   wiki = (title) => {
@@ -755,7 +763,7 @@ osm_call = async (lat, lng) => {
               var trovato = false;
               while((i < data.results.bindings.length) && (!trovato)){
                 //console.log("ul: "+ this.state.user_language + " ab: "+ data.results.bindings[i].dboabstract["xml:lang"]);
-                if(this.state.user_language == data.results.bindings[i].dboabstract["xml:lang"]){
+                if(this.state.user_language.iso1 == data.results.bindings[i].dboabstract["xml:lang"]){
                   trovato = true;
                   return(data.results.bindings[i].dboabstract["value"]);
                 }
@@ -918,7 +926,6 @@ osm_call = async (lat, lng) => {
       console.log("Non ci sono annotazioni di questo tipo");
     else {
       my_ann = my_ann[this.state.lastTypeAnn];
-      console.log("length: "+ my_ann.length);
       var i = 0;
       while(i<my_ann.length - 1){
         if(my_ann[i].hoormi_str === this.state.again.hoormi_str){
@@ -941,13 +948,11 @@ osm_call = async (lat, lng) => {
       console.log("Errore: non hai ancora scelto una location valida");
       return(null);
     }
-    console.log(my_ann[this.state.lastTypeAnn])
     if((my_ann[this.state.lastTypeAnn] == (undefined || null)) || (my_ann[this.state.lastTypeAnn].length <= 0))
       console.log("Errore: non ci sono annotazioni");
     else if(this.state.again.hoormi_str == my_ann[this.state.lastTypeAnn][0].hoormi_str)
         console.log("Can't go backwards more");  
     else{
-      console.log("length: "+ my_ann[this.state.lastTypeAnn].length);
       var i = 0;
       while(i<my_ann[this.state.lastTypeAnn].length - 1){
         if(my_ann[this.state.lastTypeAnn][i+1].hoormi_str === this.state.again.hoormi_str){
@@ -1108,7 +1113,7 @@ osm_call = async (lat, lng) => {
 
   getRoute = () => {
     console.log("destinazione: "+ this.state.mypoi[this.state.current_poi].latitude +","+ this.state.mypoi[this.state.current_poi].longitude);
-    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.mypoi[this.state.current_poi].latitude +","+ this.state.mypoi[this.state.current_poi].longitude +"&language="+ this.state.user_language +"&mode=walking&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
+    var url = "https://maps.googleapis.com/maps/api/directions/json?origin="+ this.state.myLocation.latitude +","+ this.state.myLocation.longitude +"&destination="+ this.state.mypoi[this.state.current_poi].latitude +","+ this.state.mypoi[this.state.current_poi].longitude +"&language="+ this.state.user_language.iso1 +"&mode=walking&key=AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
     console.log(url);
     return fetch(url, {
       method: "GET",
@@ -1521,9 +1526,14 @@ const styles = StyleSheet.create({
   },
   wbuttons: {
     margin: 5,
+    width: 35,
+    height: 40,
     borderColor: 'blue',
     borderWidth: 1,
-    backgroundColor: 'lightblue'
+    backgroundColor: 'lightblue',
+    //flex: 1,
+    //justifyContent: 'center',
+    alignItems: 'center',
   },
   wtext: {
     fontSize: 10
