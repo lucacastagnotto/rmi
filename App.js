@@ -11,6 +11,7 @@ import geolib from 'geolib';
 import YouTube, { YouTubeStandaloneIOS, YouTubeStandaloneAndroid } from 'react-native-youtube';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import HTML from 'react-native-render-html';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 //import geomock from './components/geomock';
 
 var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
@@ -60,8 +61,10 @@ export default class App extends Component<Props> {
     seekto: false,
     followUserLocation: true,
     list: false,
+    controls: true,
     showSM: false,
     isVisible: false,
+    langindex: -1,
     buttonstatus: "FIND" //toggleClass di Go/Stop
   }
 
@@ -70,6 +73,11 @@ export default class App extends Component<Props> {
     timeout: 5000,
     maximumAge: 0
   }
+
+  radio_props = [
+    {label: "English", value: 0 },
+    {label: "Italiano", value: 1 }
+  ]
 
   constructor(props){
     super(props);
@@ -86,10 +94,16 @@ export default class App extends Component<Props> {
         buttonstatus: "GO" 
       });
     });
-    Tts.addEventListener("tts-cancel", event =>
-      this.setState({ ttsStatus: "cancelled" })
-    );
-    
+    Tts.addEventListener("tts-cancel", event =>{
+      this.setState({ 
+        ttsStatus: "cancelled",
+        in_ascolto: false,
+        buttonstatus: "GO" 
+      }, function(){
+        //alert("reinizializzo Tts");
+        this.initTts();
+      });
+    });
     //Tts.setDefaultPitch(this.state.speechPitch);
     //Tts.setDefaultRate(this.state.speechRate);
     Tts.getInitStatus().then(this.initTts()); 
@@ -164,7 +178,6 @@ export default class App extends Component<Props> {
 
   printstate = () => {
     console.log(this.state);
-    this.displayData();
   }
 
   saveData = async (iso1, iso2, ietf, key) => {
@@ -558,14 +571,14 @@ export default class App extends Component<Props> {
       newmark.title = nome;
       newmark.what.push({type_of_file: "text", value: nome, hoormi_str: null, visited: false})
       console.log("check before dbpedia");
-      var dbpedia_value = undefined;//await this.dbpedia(newmark.title);
+      var dbpedia_value = await this.dbpedia(newmark.title);
       if(dbpedia_value != undefined) {
         newmark.why.push({type_of_file: "text", value: dbpedia_value, hoormi_str: "why", visited: false});
       }
       else {
         var check_title = await this.wiki(newmark.title);
         if(check_title != newmark.title) {
-          let promise = undefined//await this.dbpedia(check_title);
+          let promise = await this.dbpedia(check_title);
           if(promise != undefined) {
             newmark.why.push({type_of_file: "text", value: promise, hoormi_str: "why", visited: false});
           }
@@ -771,7 +784,7 @@ osm_call = async (lat, lng) => {
                     i++;
               }
               if(!trovato){
-                alert("There is no DBPedia info for this location in your language");
+                //alert("There is no DBPedia info for this location in your language");
                 return(undefined);
               }
             }
@@ -844,6 +857,51 @@ osm_call = async (lat, lng) => {
     }
   }
 
+  set_to_initial_state = () => {
+    //non tocco: selectedVoice, containerWidth, ttsStatus, user_language
+    this.setState({
+      myLocation: null,
+      markers: [],
+      mypoi: [],
+      showInfo: false,
+      route: [],
+      listenToRoute: false,
+      index_route: 0,
+      gestureName: null,
+      directions: "",
+      text_to_read: "",
+      //ttsStatus: "initializing",
+      //selectedVoice: null,
+      speechRate: 1,//0.6,
+      //speechPitch: 1.5
+      //user_language: null,
+      in_ascolto: false, //controllo del riproduttore vocale
+      stopped: false, //true se ho un soundbite che è stato interrotto (STOP button)
+      ready_to_listen: false, //controllo di riproduzioni di annotazioni (sia video sia testo)
+      trip_started: false, //controllo se ho iniziato un tour
+      current_poi: 0, //intero che è indice dell'array markers (Es: if(current_poi==5) allora sto considerando markers[5] )
+      //current_annotation: 0, // indice dell'array del tipo (what/how/why) che è stato riprodotto per ultimo
+      again: null, //memorizza ultimo soundbite riprodotto (utile per comando 'again')
+      lastTypeAnn: null, //memorizza il tipo dell'ultimo soundbite riprodotto (utile per 'more') NB: si può integrare con 'again' in un'unica variabile
+      isReady: false,
+      yt_id: null,
+      quality: null,
+      error: null,
+      isPlaying: false, //controllo di riproduzione video
+      duration: 0,
+      currentTime: 0,
+      fullscreen: false,
+      //containerWidth: null,
+      yt_status: false, //toggleClass di YouTube
+      seekto: false,
+      followUserLocation: true,
+      list: false,
+      showSM: false,
+      isVisible: false,
+      buttonstatus: "FIND" //toggleClass di Go/Stop
+    })
+  }
+
   longPress = () => {
     console.log("onlongpress");
     this.setState({ 
@@ -851,14 +909,16 @@ osm_call = async (lat, lng) => {
       trip_started: false,
       ready_to_listen: false,
       showInfo: false,
-      list: false
+      list: false,
+      mypoi: []
     });
   }
 
   playAnnotation = async (my_ann) => {
-    //gestisci eccezioni:
-    //  l'annotazione che si vuole riprodurre in realtà non esiste
-    //
+    if(my_ann == (null || undefined)){
+      console.log("stai cercando di riprodurre un' annotazione nel momento sbagliatoo che non esiste");
+      return(null);
+    }
     if(my_ann != (undefined || null)){
       await this.pause(); 
       this.setState({
@@ -969,7 +1029,8 @@ osm_call = async (lat, lng) => {
   //AGAIN: ripete l'ultimo soundbite riprodotto
   playAgain = () => {
     var myann = Object.assign({}, this.state.again);
-    this.playAnnotation(myann);
+    if(myann != (null || undefined))
+      this.playAnnotation(myann);
   }
 
   //NEXT: passa alla prossima location in lista
@@ -1229,10 +1290,10 @@ osm_call = async (lat, lng) => {
       >
 
         <View style={styles.menuBar}>
-          <TouchableOpacity onPress={() => {this.printstate(); this.setState({showSM: !this.state.showSM})}}>
+          <TouchableOpacity onPress={() => {this.setState({showSM: !this.state.showSM})}}>
             <Image style={{marginLeft: 0}} source={require('./components/menu.png')} />
           </TouchableOpacity>
-          <Text style={{color: 'black', marginLeft: 95, fontSize: 20}}>HOORMI</Text>
+          <Text style={{color: 'black', marginLeft: 135, fontSize: 20}}>HOORMI</Text>
         </View>
 
         <View style={styles.mapContainer}>
@@ -1245,17 +1306,17 @@ osm_call = async (lat, lng) => {
               if(this.state.list){
                 var order = await this.getDirections(); 
                 this.mergeMarkers(order);
-                this.setState({list: false});
+                this.setState({list: false, controls: true});
               }
             }} />
         </View>
 
         { this.state.showSM && (
           <View style={styles.sidemenu}>
-            <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
+            <TouchableOpacity onPress={() => this.setState({ isVisible: true, langindex: this.state.user_language.key })}>
               <Text style={styles.textSM}>Language</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.setState({ list: true, showSM: false })}>
+            <TouchableOpacity onPress={() => {if((this.state.markers != (null || undefined)) && this.state.markers.length > 0)this.setState({ list: true, controls: false, showSM: false })}}>
               <Text style={styles.textSM}>List of POI</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={this.printstate}>
@@ -1264,14 +1325,44 @@ osm_call = async (lat, lng) => {
           </View>
         )}
 
-        <Overlay 
+        <Overlay
           isVisible={this.state.isVisible}
           overlayBackgroundColor='white'
           height='40%'
           width='60%'
           onBackdropPress={() => this.setState({ isVisible: false })}
         >
-          <Text>Ita</Text>
+          <RadioForm
+            ref={component => {
+              this.radForm = component;
+            }}
+            radio_props={this.radio_props}
+            initial={this.state.langindex}
+            onPress={(value) => {
+              if(value==1){
+                this.saveData("it", "ita", "it-IT", 1);
+                this.setState({
+                  user_language: {
+                    iso1: "it",
+                    iso2: "ita",
+                    ietf: "it-IT",
+                    key: 1
+                  }
+                });
+              }
+              else if(value==0){
+                this.saveData("en", "eng", "en-US", 0);
+                this.setState({
+                  user_language: {
+                    iso1: "en",
+                    iso2: "eng",
+                    ietf: "en-US",
+                    key: 0
+                  }
+                });
+              }
+            }}
+          />
         </Overlay>
 
         { this.state.showInfo && (
@@ -1351,7 +1442,7 @@ osm_call = async (lat, lng) => {
           </View>
           )}
 
-          {!this.state.list && (
+          {this.state.controls && (
           <GestureRecognizer
             onSwipeUp={(state) => this.onSwipeUp(state)}
             onSwipeDown={(state) => this.onSwipeDown(state)}
@@ -1380,8 +1471,10 @@ osm_call = async (lat, lng) => {
               <TouchableOpacity 
               style={styles.wbuttons} 
               onPress={() => {
-                if(this.state.mypoi[this.state.current_poi] != (null || undefined))
-                  this.playAnnotation(this.state.mypoi[this.state.current_poi].what[0])
+                if(this.state.trip_started){
+                  if(this.state.mypoi[this.state.current_poi] != (null || undefined))
+                    this.playAnnotation(this.state.mypoi[this.state.current_poi].what[0])
+                }
               }}
               >
                 <Text style={styles.wtext}>WHAT</Text>
@@ -1390,12 +1483,14 @@ osm_call = async (lat, lng) => {
               <TouchableOpacity 
               style={styles.wbuttons} 
               onPress={() => {
-                if(this.state.mypoi[this.state.current_poi] != (null || undefined)){/* //rimetti a visited: false le annotazioni di altro tipo
-                  if((this.state.mypoi[this.state.current_poi].what != (null || undefined)) && (this.state.mypoi[this.state.current_poi].what.length > 0)){
-                    var nwpoi;
-                    this.set_visited_false(nwpoi, "what", 0);
-                  }*/
-                  this.playAnnotation(this.state.mypoi[this.state.current_poi].why[0]);
+                if(this.state.trip_started){
+                  if(this.state.mypoi[this.state.current_poi] != (null || undefined))
+                  /* //rimetti a visited: false le annotazioni di altro tipo
+                    if((this.state.mypoi[this.state.current_poi].what != (null || undefined)) && (this.state.mypoi[this.state.current_poi].what.length > 0)){
+                      var nwpoi;
+                      this.set_visited_false(nwpoi, "what", 0);
+                    }*/
+                    this.playAnnotation(this.state.mypoi[this.state.current_poi].why[0]);
                 }
               }}
               >
@@ -1405,8 +1500,10 @@ osm_call = async (lat, lng) => {
               <TouchableOpacity 
               style={styles.wbuttons}
               onPress={() => {
-                if(this.state.mypoi[this.state.current_poi] != (null || undefined))
-                  this.playAnnotation(this.state.mypoi[this.state.current_poi].how[0])
+                if(this.state.trip_started){
+                  if(this.state.mypoi[this.state.current_poi] != (null || undefined))
+                    this.playAnnotation(this.state.mypoi[this.state.current_poi].how[0])
+                }
               }}
               >
                 <Text style={styles.wtext}>HOW</Text>
@@ -1472,8 +1569,7 @@ const styles = StyleSheet.create({
     height: 60,
     width: '100%',
     top: 0,
-    borderWidth: 5,
-    borderColor: 'red',
+    borderWidth: 1,
     backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'flex-end'
@@ -1490,7 +1586,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderWidth: 2,
     borderRightColor: 'blue',
-    height: '40%',
+    height: '20%',
     width: '55%',
     backgroundColor: 'white',
     flexDirection: 'column',
