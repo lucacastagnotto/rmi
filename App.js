@@ -14,8 +14,8 @@ import HTML from 'react-native-render-html';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 //import geomock from './components/geomock';
 
-var GOOGLE_KEY = "AIzaSyD1saWNvYTd_v8sfbPB8puL7fvxKdjcfF0";
-var DBPEDIA_KEY = "a87affce-e8fb-4b31-b64c-43d19e64cfcd";
+var GOOGLE_KEY = "";
+var DBPEDIA_KEY = "";
 var nextkey = 0; //valore necessario da attribuire come 'key' a ciascun <Marker> di <MapView>. Da aggiornare (++) dopo ogni assegnazione
 var plus_code_digits = ["2", "3", "4", "5", "6", "7", "8", "9", "C", "F", "G", "H", "J", "M", "P", "Q", "R", "V", "W", "X"];
 
