@@ -11,7 +11,7 @@
     "geolib": "^2.0.24",
     "immutability-helper": "^3.0.1",
     "react": "16.6.3",
-    "react-native": "^0.58.6",
+    "react-native": "^0.70.2",
     "react-native-elements": "^1.1.0",
     "react-native-maps": "^0.23.0",
     "react-native-maps-directions": "^1.6.0",
